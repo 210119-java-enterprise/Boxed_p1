@@ -14,13 +14,13 @@ public class Driver {
         for (Metamodel<?> metamodel : config.getMetamodels()) {
             System.out.printf("Printing metamodel for class: %s\n", metamodel.getClassName());
             PrimaryKeyField pkField = metamodel.getPrimaryKey();
-            List<ColumnField> columnfields = metamodel.getColumns();
+            List<ColumnField> columnFields = metamodel.getColumns();
             List<ForeignKeyField> foreignFields = metamodel.getForeignKeys();
 
             System.out.printf("\tFound a primary key field named %s of type %s, which maps to the column with the name %s\n",
                     pkField.getName(), pkField.getType(), pkField.getColumnName());
 
-            for (ColumnField columnField : columnfields) {
+            for (ColumnField columnField : columnFields) {
                 System.out.printf("\tFound a column field named: %s of type %s, which maps to the column with the name: %s\n",
                         columnField.getName(), columnField.getType(), columnField.getColumnName());
             }
