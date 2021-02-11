@@ -1,16 +1,18 @@
 package com.revature.model;
 
-import com.revature.annotations.Column;
-import com.revature.annotations.Column_FK;
-import com.revature.annotations.Column_PK;
-import com.revature.annotations.Entity;
+import com.revature.annotations.*;
 
-import java.util.List;
-import java.util.Objects;
-
+/**
+ * Demo class for testing purposes, shouldn't be in final package
+ *
+ * @author Wezley Singleton
+ * @author Gabrielle Luna
+ */
 @Entity(tableName = "users")
 public class User {
+
     @Column_PK(columnName = "id")
+    @Default
     private int id;
 
     @Column(columnName = "first_name")
