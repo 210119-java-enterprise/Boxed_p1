@@ -1,8 +1,37 @@
 package com.revature;
 
+
+import com.revature.utilities.*;
+import com.revature.model.User;
+
+import java.util.List;
+
 public class Driver {
     public static void main(String[] args) {
-        System.out.println("HelloWorld. ");
-    }
+        Configuration config = new Configuration();
+        config.addAnnotatedClass(User.class);
 
+        for (Metamodel<?> metamodel : config.getMetamodels()) {
+            System.out.printf("Printing metamodel for class: %s\n", metamodel.getClassName());
+            PrimaryKeyField pkField = metamodel.getPrimaryKey();
+            List<ColumnField> columnfields = metamodel.getColumns();
+            List<ForeignKeyField> foreignFields = metamodel.getForeignKeys();
+
+            System.out.printf("\tFound a primary key field named %s of type %s, which maps to the column with the name %s\n",
+                    pkField.getName(), pkField.getType(), pkField.getColumnName());
+
+            for (ColumnField columnField : columnfields) {
+                System.out.printf("\tFound a column field named: %s of type %s, which maps to the column with the name: %s\n",
+                        columnField.getName(), columnField.getType(), columnField.getColumnName());
+            }
+
+            for (ForeignKeyField foreignKeyField : foreignFields) {
+                System.out.printf("\tFound a foreign key field named %s of type %s, which maps to the column with the name: %s\n",
+                        foreignKeyField.getName(), foreignKeyField.getType(), foreignKeyField.getColumnName());
+            }
+
+            System.out.println();
+        }
+    }
 }
+
