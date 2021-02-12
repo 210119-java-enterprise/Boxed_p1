@@ -19,6 +19,7 @@ import java.util.List;
 public class Metamodel <T>{
     //Attributes -------------------------------------------------
     private Class<T> clazz;
+    private String entityName;
     private PrimaryKeyField primaryKeyField;
     private List<ColumnField> columnFields;
     private List<ForeignKeyField> foreignKeyFields;

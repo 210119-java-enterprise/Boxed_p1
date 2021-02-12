@@ -72,4 +72,9 @@ public class Configuration {
     public List<Metamodel<Class<?>>> getMetamodels() {
         return (metamodelList == null) ? Collections.emptyList() : metamodelList;
     }
+    public Class<?> getMatchingClass(String entityName){
+        for (Metamodel<Class<?>> metamodel: metamodelList) {
+        }
+        return null;
+    }
 }

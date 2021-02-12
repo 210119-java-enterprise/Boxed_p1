@@ -3,16 +3,19 @@ package com.revature.service;
 import com.revature.utilities.Configuration;
 import com.revature.utilities.connection.ConnectionPool;
 import com.revature.utilities.connection.R4ConnectionPool;
-import org.postgresql.core.Query;
+import com.revature.utilities.queries.ResultSetParser;
 
 import java.net.ConnectException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class BlackBox {
+    //Attributes ----------------------------------------------------
     private Configuration config;
     private ConnectionPool connectionPool;
     private Connection currentConnection;
+    private ResultSet rs;
+
+
     //Constructors --------------------------------------------------
     public BlackBox(String configLocation) {
         //Load config file
@@ -48,9 +51,29 @@ public class BlackBox {
     }
 
     //Queries -------------------------------------------------------
-//    public QueryBuilder craftQuery(){
-//
-//        return null;
-//    }
+    public boolean executeThisQuery(String sql){
+
+        try {
+            PreparedStatement pStmt = currentConnection.prepareStatement(sql);
+            rs = pStmt.executeQuery();
+            return true;
+        }catch(SQLException e){
+            System.out.println("Following SQL query failed: " + sql);
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public String getQueryResultSummary(){
+        return ResultSetParser.getSummary(rs);
+    }
+
+    public <T> T getResultInClass(){
+        String entityName = ResultSetParser.getEntityName(rs);
+        Class entity;
+
+        return null;
+    }
 
 }

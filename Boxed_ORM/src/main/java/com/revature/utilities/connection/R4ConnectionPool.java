@@ -21,7 +21,7 @@ public class R4ConnectionPool implements ConnectionPool {
     private List<Connection> connectionPool;
 
     private List<Connection> usedConnections = new ArrayList<>();
-    private static int INITIAL_POOL_SIZE = 10;
+    private static int INITIAL_POOL_SIZE = 1;
     private static int MAX_POOL_SIZE = 50;
     private static int MAX_TIMEOUT = 50;
 
