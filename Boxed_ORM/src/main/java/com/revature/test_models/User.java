@@ -1,4 +1,4 @@
-package com.revature.model;
+package com.revature.test_models;
 
 import com.revature.annotations.*;
 

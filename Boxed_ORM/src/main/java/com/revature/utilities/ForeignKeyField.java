@@ -10,7 +10,8 @@ import java.lang.reflect.Field;
  */
 public class ForeignKeyField {
     //Attributes -------------------------------------------------
-    private Field field;
+    private final Field field;
+    //Not allowing default values for Foreign Keys
 
     //Constructors -------------------------------------------------
     public ForeignKeyField(Field field) {
