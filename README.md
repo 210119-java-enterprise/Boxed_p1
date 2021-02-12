@@ -12,7 +12,7 @@ BlackBox:
   - pending: retrieving an entity containing latest result set data
   
 QueryBuilder:
-  - Allows you to craft a SELECT statement through method chaining with no prior SQL knowledge
+  - Allows you to craft a basic SELECT statement through method chaining with no prior SQL knowledge
   - getQuery returns a string holding the completed query
   
 Currently all other classes are intended for 'internal' use by BlackBox.
