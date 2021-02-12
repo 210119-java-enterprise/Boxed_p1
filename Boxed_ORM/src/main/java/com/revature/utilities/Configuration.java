@@ -15,9 +15,9 @@ public class Configuration {
     private List<Class> preloadedEntities;
     private List<Metamodel<Class<?>>> metamodelList;
 
-    public Configuration() {
+    public Configuration(String configLocation) {
         try{
-            props.load(new FileReader("src/main/resources/BoxedCfg.properties"));
+            props.load(new FileReader(configLocation));
         }catch(IOException e){
             e.printStackTrace();
         }

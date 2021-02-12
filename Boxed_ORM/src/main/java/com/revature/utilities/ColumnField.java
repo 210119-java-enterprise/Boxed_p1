@@ -1,7 +1,7 @@
 package com.revature.utilities;
 
 import com.revature.annotations.Column;
-import com.revature.annotations.Default;
+import com.revature.annotations.Generated;
 
 import java.lang.reflect.Field;
 
@@ -23,7 +23,7 @@ public class ColumnField {
         this.field = field;
 
         //check for Default annotation on field before assigning
-        isDefault = field.getAnnotation(Default.class) != null;
+        isDefault = field.getAnnotation(Generated.class) != null;
     }
 
     //Getters and Setters------------------------------------------

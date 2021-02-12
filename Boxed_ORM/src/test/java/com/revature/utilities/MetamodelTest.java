@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MetamodelTest {
     public static void main(String[] args) {
-        Configuration config = new Configuration();
+        Configuration config = new Configuration("src/main/resources/BoxedCfg.properties");
         for (Metamodel<?> metamodel : config.getMetamodels()) {
             System.out.printf("Printing metamodel for class: %s\n", metamodel.getClassName());
             PrimaryKeyField pkField = metamodel.getPrimaryKey();

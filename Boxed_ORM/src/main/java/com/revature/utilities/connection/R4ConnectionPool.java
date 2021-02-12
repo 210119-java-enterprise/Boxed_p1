@@ -53,6 +53,7 @@ public class R4ConnectionPool implements ConnectionPool {
     }
 
     //Overrides -----------------------------------------------------
+    //TODO: allow for connection that does not require schema?
     @Override
     public Connection getConnection() throws SQLException{
         if (connectionPool.isEmpty()) {

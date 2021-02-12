@@ -12,7 +12,7 @@ import com.revature.annotations.*;
 public class User {
 
     @Column_PK(columnName = "id")
-    @Default
+    @Generated
     private int id;
 
     @Column(columnName = "first_name")
