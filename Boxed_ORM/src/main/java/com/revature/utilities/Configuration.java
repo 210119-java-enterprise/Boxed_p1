@@ -30,7 +30,6 @@ public class Configuration {
         //retrieve preloaded Entities
         String CSV = props.getProperty("entity-location");
         String[] annotatedEntityLocations= CSV.split(",");
-        System.out.println(Arrays.toString(annotatedEntityLocations));
         for (String s : annotatedEntityLocations){
             try {
                 metamodelList.add(Metamodel.of((Class) Class.forName(s)));
@@ -40,6 +39,23 @@ public class Configuration {
         }
 
 
+    }
+
+    //Getters and Setters -------------------------------------------
+    public String getDbUrl() {
+        return dbUrl;
+    }
+
+    public String getDbUsername() {
+        return dbUsername;
+    }
+
+    public String getDbPassword() {
+        return dbPassword;
+    }
+
+    public String getDbSchema() {
+        return dbSchema;
     }
 
     //Other --------------------------------------------------------
