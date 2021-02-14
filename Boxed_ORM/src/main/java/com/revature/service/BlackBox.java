@@ -1,12 +1,16 @@
 package com.revature.service;
 
+import com.revature.model.Metamodel;
 import com.revature.utilities.Configuration;
 import com.revature.utilities.connection.ConnectionPool;
 import com.revature.utilities.connection.R4ConnectionPool;
 import com.revature.utilities.queries.ResultSetParser;
 
+import java.lang.reflect.Constructor;
 import java.net.ConnectException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlackBox {
     //Attributes ----------------------------------------------------
@@ -52,7 +56,7 @@ public class BlackBox {
 
     //Queries -------------------------------------------------------
     public boolean executeThisQuery(String sql){
-
+        //TODO: accept QueryString as parameter? Only if info required isn't available via metaData
         try {
             PreparedStatement pStmt = currentConnection.prepareStatement(sql);
             rs = pStmt.executeQuery();
@@ -61,7 +65,6 @@ public class BlackBox {
             System.out.println("Following SQL query failed: " + sql);
             e.printStackTrace();
         }
-
         return false;
     }
 
@@ -69,11 +72,19 @@ public class BlackBox {
         return ResultSetParser.getSummary(rs);
     }
 
-    public <T> T getResultInClass(){
-        String entityName = ResultSetParser.getEntityName(rs);
-        Class entity;
+    public <T> List<T> getResultInClass(Class<T> model){
+        List<T> list = new ArrayList<T>();
 
-        return null;
+        try {
+            while(rs.next()){
+                T t = model.newInstance();
+                list.add((T) ResultSetParser.getObjFromResult(model.newInstance(), rs));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
 }

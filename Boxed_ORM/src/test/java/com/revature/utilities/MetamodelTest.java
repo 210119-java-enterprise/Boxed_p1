@@ -1,5 +1,10 @@
 package com.revature.utilities;
 
+import com.revature.model.ColumnField;
+import com.revature.model.ForeignKeyField;
+import com.revature.model.Metamodel;
+import com.revature.model.PrimaryKeyField;
+
 import java.util.List;
 
 public class MetamodelTest {

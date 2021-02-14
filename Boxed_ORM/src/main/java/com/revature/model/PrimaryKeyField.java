@@ -1,4 +1,4 @@
-package com.revature.utilities;
+package com.revature.model;
 
 import com.revature.annotations.Column_PK;
 import com.revature.annotations.Generated;

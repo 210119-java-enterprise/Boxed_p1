@@ -45,8 +45,10 @@ public class Driver {
         //6.)Fetch Results
         System.out.println("Result Summary --------------------------");
         System.out.println(box.getQueryResultSummary());
-        User newUser = (User) box.getResultInClass();
+        User newUser = new User();
+        System.out.println(box.getResultInClass(newUser.getClass()).toString());
         System.out.println("Step 6 complete\n");
+
 
 
 

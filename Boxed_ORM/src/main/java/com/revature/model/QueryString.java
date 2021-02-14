@@ -7,6 +7,8 @@ public class QueryString {
     public StringBuilder from;
     public StringBuilder where;
 
+    //TODO: add binary code to encode select query type?
+
     public QueryString() {
         select = new StringBuilder("");
         from = new StringBuilder("");

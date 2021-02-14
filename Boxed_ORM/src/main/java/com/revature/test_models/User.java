@@ -2,26 +2,28 @@ package com.revature.test_models;
 
 import com.revature.annotations.*;
 
+import static com.revature.model.ColumnType.*;
+
 /**
  * Demo class for testing purposes, shouldn't be in final package
  *
  * @author Wezley Singleton
  * @author Gabrielle Luna
  */
-@Entity(tableName = "users")
+@Entity(tableName = "users_demo")
 public class User {
 
-    @Column_PK(columnName = "id")
+    @Column(type = PK, columnName = "id")
     @Generated
     private int id;
 
-    @Column(columnName = "first_name")
+    @Column(type = DEFAULT, columnName = "first_name")
     private String firstName;
 
-    @Column(columnName = "last_name")
+    @Column(type = DEFAULT, columnName = "last_name")
     private String lastName;
 
-    @Column(columnName = "email_address")
+    @Column(type = DEFAULT, columnName = "email_address")
     private String emailAddress;
 
 //    @Column_FK(columnName = "test_relation")

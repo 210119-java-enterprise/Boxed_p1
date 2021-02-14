@@ -1,5 +1,7 @@
 package com.revature.utilities;
 
+import com.revature.model.Metamodel;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -74,6 +76,11 @@ public class Configuration {
     }
     public Class<?> getMatchingClass(String entityName){
         for (Metamodel<Class<?>> metamodel: metamodelList) {
+            //System.out.println("metamodel Names: |" + metamodel.getEntityName() + "| - |" + entityName + "|");
+            if (metamodel.getEntityName().equals(entityName)){
+                //System.out.println("found");
+                return metamodel.getClazz();
+            }
         }
         return null;
     }

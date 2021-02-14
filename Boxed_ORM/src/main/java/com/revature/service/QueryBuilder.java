@@ -3,6 +3,7 @@ package com.revature.service;
 import com.revature.model.QueryString;
 import org.postgresql.core.Query;
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +17,13 @@ public class QueryBuilder {
     String selectBase = "SELECT ";
     String fromBase = "FROM ";
     String whereBase = "WHERE ";
+
+    //
     QueryString qString;
-    StringBuilder query, prevQuery;
-    //TODO: speed dial queries via map?
+    StringBuilder query;
+
+    //Save up to 3 queries
+    static QueryString[] speedDial = {null, null, null};
     //TODO: trim whitespace in strings
 
     //Constructors --------------------------------------------------
@@ -29,9 +34,20 @@ public class QueryBuilder {
 
     public QueryBuilder craftQuery(){
         qString = new QueryString();
-        prevQuery = query;
         query = new StringBuilder("");
         return this;
+    }
+
+    public void saveQuery(int i){
+        if (i < 0 || i > 2)
+            throw new IllegalArgumentException("Value greater than 3 not accepted");
+        speedDial[i] = qString;
+    }
+
+    public void loadQuery(int i){
+        if (i < 0 || i > 2)
+            throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
+        qString = speedDial[i];
     }
 
     //SELECT --------------------------------------------------------
