@@ -14,16 +14,17 @@ import java.util.List;
  */
 public class R4ConnectionPool implements ConnectionPool {
     //Attributes ----------------------------------------------------
-    private String url;
-    private String user;
-    private String password;
-    private String schema;
-    private List<Connection> connectionPool;
+    private final String url;
+    private final String user;
+    private final String password;
+    private final String schema;
+    private final List<Connection> connectionPool;
 
-    private List<Connection> usedConnections = new ArrayList<>();
-    private static int INITIAL_POOL_SIZE = 1;
-    private static int MAX_POOL_SIZE = 50;
-    private static int MAX_TIMEOUT = 50;
+    private final List<Connection> usedConnections = new ArrayList<>();
+
+    private final static int INITIAL_POOL_SIZE = 1;
+    private final static int MAX_POOL_SIZE = 50;
+    private final static int MAX_TIMEOUT = 50;
 
 
     //Static --------------------------------------------------------
@@ -96,6 +97,8 @@ public class R4ConnectionPool implements ConnectionPool {
     public int getSize(){
         return connectionPool.size() + usedConnections.size();
     }
+
+    public int getSizeUsedPool() { return usedConnections.size();}
 
     //Other ---------------------------------------------------------
     private static Connection createConnection( String url, String user,

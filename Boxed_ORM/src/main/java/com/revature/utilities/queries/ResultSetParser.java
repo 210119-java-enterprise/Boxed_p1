@@ -15,9 +15,16 @@ import java.sql.SQLException;
 public class ResultSetParser {
 
     public static String getSummary(ResultSet rs){
+        //Validate
+        if (rs == null) return "";
+
         StringBuilder resultSummary = new StringBuilder("");
         try {
+            //Retrieve metaData
             ResultSetMetaData rsMd = rs.getMetaData();
+            if (rsMd == null) return "";
+
+            //Parse metaData
             int count = rsMd.getColumnCount();
             resultSummary.append("Column Count: ").append(count);
             for (int i = 1; i <= count; i++) {
