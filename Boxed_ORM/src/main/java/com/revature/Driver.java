@@ -29,7 +29,7 @@ public class Driver {
         QueryBuilder builder = new QueryBuilder();
         String query = builder.craftQuery()
                 .returnAllFields()
-                .ofClassType("Users_demo\n")
+                .ofClassType("Users_demo")
                 .getQuery();
         System.out.println(query);
         System.out.println("Step 4 complete\n");
