@@ -7,6 +7,8 @@ import com.revature.test_models.User;
 import org.postgresql.core.Query;
 
 import java.sql.Connection;
+import java.util.Arrays;
+import java.util.List;
 
 public class Driver {
     private static String configLocation = "src/main/resources/BoxedCfg.properties";
@@ -46,9 +48,22 @@ public class Driver {
         System.out.println("Result Summary --------------------------");
         System.out.println(box.getQueryResultSummary());
         User newUser = new User();
+        System.out.println("Results in OBJ --------------------------");
         System.out.println(box.getResultInClass(newUser.getClass()).toString());
         System.out.println("Step 6 complete\n");
 
+        //Get single field results
+        //Get multi field results
+        System.out.println("Result in List --------------------------");
+        box.executeThisQuery(query);
+        List<String[]> result = box.getResultInList();
+        for (String[] sa:result) {
+            System.out.println(Arrays.toString(sa));
+        }
+
+        //INSERT
+        //UPDATE
+        //DELETE
 
 
 

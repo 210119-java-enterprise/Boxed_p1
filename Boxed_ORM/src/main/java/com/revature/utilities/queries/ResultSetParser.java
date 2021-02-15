@@ -7,6 +7,9 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -77,6 +80,28 @@ public class ResultSetParser {
         return obj;
     }
 
+    public static List<String[]> getListFromResult(ResultSet rs){
+        List<String[]> result = new ArrayList<>();
+
+        String[] headers = getResultHeaders(rs);
+        result.add(headers);
+
+       try{
+           while(rs.next()){
+               String[] row  = new String[headers.length];
+               int num = 0;
+               for (String s: headers) {
+                   row[num] = rs.getObject(s.split(":")[1]).toString();
+                   num++;
+               }
+               result.add(row);
+           }
+       }catch(SQLException e){
+           e.printStackTrace();
+       }
+        return result;
+    }
+
     //Helper Classes ------------------------------------------------
     public static boolean isPrimitive(Class<?> type){
         return (type == int.class || type == long.class || type == double.class || type == float.class
@@ -104,5 +129,24 @@ public class ResultSetParser {
             String string = "class '" + type.getName() + "' is not a primitive";
             throw new IllegalArgumentException(string);
         }
+    }
+
+    public static String[] getResultHeaders(ResultSet rs) {
+        try {
+            //Retrieve metadata
+            ResultSetMetaData rsMd = rs.getMetaData();
+
+            //Parse metadata
+            int count = rsMd.getColumnCount();
+            String[] headers = new String[count];
+
+            for (int i = 0; i < count; i++) {
+               headers[i] = rsMd.getTableName(i + 1) + ":" + rsMd.getColumnName(i + 1);
+            }
+            return headers;
+        } catch (SQLException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

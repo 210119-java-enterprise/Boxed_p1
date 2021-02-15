@@ -87,4 +87,8 @@ public class BlackBox {
         return list;
     }
 
+    public List<String[]> getResultInList(){
+        return ResultSetParser.getListFromResult(rs);
+    }
+
 }
