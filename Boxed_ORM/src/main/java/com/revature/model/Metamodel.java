@@ -1,10 +1,11 @@
-package com.revature.utilities;
+package com.revature.model;
 
 import com.revature.annotations.Column;
 import com.revature.annotations.Column_FK;
 import com.revature.annotations.Column_PK;
 import com.revature.annotations.Entity;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,12 +19,12 @@ import java.util.List;
  */
 public class Metamodel <T>{
     //Attributes -------------------------------------------------
-    private Class<T> clazz;
+    private final Class<T> clazz;
     private PrimaryKeyField primaryKeyField;
-    private List<ColumnField> columnFields;
+    private final List<ColumnField> columnFields;
     private List<ForeignKeyField> foreignKeyFields;
 
-    //Constructors -------------------------------------------------
+    //Static --------------------------------------------------------
     public static <T> Metamodel <T> of (Class<T> clazz){
         if (clazz.getAnnotation(Entity.class) == null){
             throw new IllegalStateException("Cannot create Metamodel object! Provided class, "
@@ -31,42 +32,44 @@ public class Metamodel <T>{
         }
         return new Metamodel<>(clazz);
     }
-
+    //Constructors -------------------------------------------------
     public Metamodel(Class<T> clazz){
         this.clazz = clazz;
         this.columnFields = new LinkedList<>();
         this.foreignKeyFields = new LinkedList<>();
     }
 
-    //Other ---------------------------------------------------------
+    //Getters and Setters -------------------------------------------
+    public Class<T> getClazz() { return clazz; }
+
+    public Constructor<?>[] getConstructors(){ return clazz.getConstructors();}
+
     public String getClassName(){ return clazz.getSimpleName(); }
 
-    public String getSimpleClassName() { return clazz.getSimpleName();}
+    public String getEntityName() { return clazz.getAnnotation(Entity.class).tableName();}
 
     public PrimaryKeyField getPrimaryKey(){
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             Column_PK primaryKey = field.getAnnotation(Column_PK.class);
-            if (primaryKey != null) {
+            if (primaryKey != null)
                 return new PrimaryKeyField(field);
-            }
         }
         throw new RuntimeException("Did not find a field annotated with @Column_PK in: "
-                                   + clazz.getName());
+                + clazz.getName());
     }
 
     public List<ColumnField> getColumns() {
         Field[] fields = clazz.getDeclaredFields();
+
         for (Field field : fields) {
             Column column = field.getAnnotation(Column.class);
-            if(column != null) {
+            if (column != null)
                 columnFields.add(new ColumnField(field));
-            }
         }
 
-        if (columnFields.isEmpty()) {
+        if (columnFields.isEmpty())
             throw new RuntimeException("No columns found in: " + clazz.getName());
-        }
 
         return columnFields;
     }
@@ -74,14 +77,17 @@ public class Metamodel <T>{
     public List<ForeignKeyField> getForeignKeys() {
         List<ForeignKeyField> foreignKeyFields = new ArrayList<>();
         Field[] fields = clazz.getDeclaredFields();
+
         for (Field field : fields) {
             Column_FK column = field.getAnnotation(Column_FK.class);
-            if (column != null) {
+            if (column != null)
                 foreignKeyFields.add(new ForeignKeyField(field));
-            }
         }
-
         return foreignKeyFields;
     }
+
+    //Other ---------------------------------------------------------
+
+
 
 }

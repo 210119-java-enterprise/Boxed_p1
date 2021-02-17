@@ -1,6 +1,7 @@
-package com.revature.utilities;
+package com.revature.model;
 
 import com.revature.annotations.Column;
+import com.revature.annotations.Generated;
 
 import java.lang.reflect.Field;
 
@@ -10,7 +11,8 @@ import java.lang.reflect.Field;
  */
 public class ColumnField {
     //Attributes -------------------------------------------------
-    private Field field;
+    private final Field field;
+    private final boolean isDefault;
 
     //Constructors -------------------------------------------------
     public ColumnField (Field field) {
@@ -19,6 +21,9 @@ public class ColumnField {
                                             + getName() + " is not annotated with @Column");
         }
         this.field = field;
+
+        //check for Default annotation on field before assigning
+        isDefault = field.getAnnotation(Generated.class) != null;
     }
 
     //Getters and Setters------------------------------------------
@@ -27,4 +32,6 @@ public class ColumnField {
     public Class<?> getType() { return field.getType();}
 
     public String getColumnName() { return field.getAnnotation(Column.class).columnName();}
+
+    public boolean isDefault() { return isDefault; }
 }

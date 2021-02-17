@@ -1,4 +1,4 @@
-package com.revature.utilities;
+package com.revature.model;
 
 import com.revature.annotations.Column_FK;
 
@@ -10,7 +10,8 @@ import java.lang.reflect.Field;
  */
 public class ForeignKeyField {
     //Attributes -------------------------------------------------
-    private Field field;
+    private final Field field;
+    //Not allowing default values for Foreign Keys
 
     //Constructors -------------------------------------------------
     public ForeignKeyField(Field field) {
