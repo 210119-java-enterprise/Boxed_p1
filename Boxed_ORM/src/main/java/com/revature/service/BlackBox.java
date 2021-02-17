@@ -72,12 +72,15 @@ public class BlackBox {
     }
 
     public <T> List<T> getResultInClass(Class<T> model){
+        Metamodel <Class<?>> meta = config.getMatchingMetamodel(model);
+
         List<T> list = new ArrayList<T>();
 
         try {
             while(rs.next()){
                 T t = model.newInstance();
-                list.add((T) ResultSetParser.getObjFromResult(model.newInstance(), rs));
+                //noinspection unchecked
+                list.add((T) ResultSetParser.getObjFromResult(t, meta.getActiveFields(), rs));
             }
         }catch(Exception e){
             e.printStackTrace();

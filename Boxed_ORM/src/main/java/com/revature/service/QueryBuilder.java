@@ -21,11 +21,13 @@ public class QueryBuilder extends TransactionBuilder{
         }
     }
 
+    //statement stats
+    private int numTables = 0;
+    private int numConditions;
+
     //Save up to 3 queries
     static StringBuilder[] speedDial = new StringBuilder[3];
 
-    //Track num entities
-    int numTables = 0;
 
     //TODO: add aliases for select statements
     //TODO: add aggregate functions
@@ -41,6 +43,7 @@ public class QueryBuilder extends TransactionBuilder{
             statements[i] = new StringBuilder("");
         }
         numTables = 0;
+        numConditions = 0;
         return this;
     }
 

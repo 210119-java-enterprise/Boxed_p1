@@ -10,8 +10,7 @@ public class Repository {
     public static ResultSet executeThisQuery(Connection connection, String sql){
         try {
             PreparedStatement pStmt = connection.prepareStatement(sql);
-            ResultSet rs = pStmt.executeQuery();
-            return rs;
+            return pStmt.executeQuery();
         }catch(SQLException e){
             System.out.println("Following SQL query failed: " + sql);
             e.printStackTrace();

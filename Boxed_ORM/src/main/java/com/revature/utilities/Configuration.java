@@ -60,6 +60,15 @@ public class Configuration {
         return dbSchema;
     }
 
+    public Metamodel<Class<?>> getMatchingMetamodel(Class<?> model){
+        for (Metamodel<Class<?>> mm:metamodelList) {
+            if(mm.getClassName().equals(model.getSimpleName())){
+                return mm;
+            }
+        }
+        return null;
+    }
+
     //Other --------------------------------------------------------
     public Configuration addAnnotatedClass(Class annotatedClass) {
         if (metamodelList == null) {

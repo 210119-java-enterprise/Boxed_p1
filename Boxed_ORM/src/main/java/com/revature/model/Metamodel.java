@@ -59,19 +59,21 @@ public class Metamodel <T>{
                 + clazz.getName());
     }
 
-    public List<ColumnField> getColumns() {
+    public List<Field> getActiveFields() {
         Field[] fields = clazz.getDeclaredFields();
+        List<Field> activeFields = new ArrayList<>();
 
         for (Field field : fields) {
             Column column = field.getAnnotation(Column.class);
-            if (column != null)
-                columnFields.add(new ColumnField(field));
+            if (column != null){
+                activeFields.add(field);
+            }
         }
 
-        if (columnFields.isEmpty())
-            throw new RuntimeException("No columns found in: " + clazz.getName());
+        if (activeFields.isEmpty())
+            throw new RuntimeException("No marked fields found in: " + clazz.getName());
 
-        return columnFields;
+        return activeFields;
     }
 
     public List<ForeignKeyField> getForeignKeys() {
