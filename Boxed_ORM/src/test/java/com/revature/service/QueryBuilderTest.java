@@ -1,7 +1,5 @@
 package com.revature.service;
 
-import com.revature.model.queries.JoinTypes;
-import com.revature.model.queries.QueryString;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,7 +10,6 @@ import static org.mockito.Mockito.mock;
 public class QueryBuilderTest {
 
     QueryBuilder sut;
-    QueryString mockQueryString = mock(QueryString.class);
 
     @Before
     public void setUpTest() { sut = new QueryBuilder();}
@@ -23,7 +20,7 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenNotGiven_anySetup(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String result = sut.getQuery();
@@ -36,7 +33,7 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenOnlyGiven_Where(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String result = sut.addCondition_Between("this", "0", "100")
@@ -50,7 +47,7 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenOnlyGiven_FromAndWhere(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String result = sut.ofClassType("User")
@@ -65,10 +62,10 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenOnlyGiven_SelectAndWhere(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .addCondition_Between("this", "==", "that")
                 .getQuery();
 
@@ -80,10 +77,10 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_SelectAll(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
                 .getQuery();
 
@@ -95,7 +92,7 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_SelectField(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String result = sut.returnFields("username")
@@ -110,7 +107,7 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_SelectFieldsTrue(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String result = sut.returnFields("username", "password")
@@ -126,7 +123,7 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_SelectFieldsFalse(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String result = sut.returnFields("username", "password")
@@ -142,7 +139,7 @@ public class QueryBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void test_isValid_whenSelectFields_givenEmpty(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String[] list = new String[0];
@@ -154,10 +151,10 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_Between(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
                 .addCondition_Between("id", "0", "50")
                 .getQuery();
@@ -170,42 +167,42 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_Like(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
                 .addCondition_Like("username", "Ga%")
                 .getQuery();
 
         //Assert
-        Assert.assertEquals("SELECT * FROM User T1 WHERE username LIKE Ga% ", result);
+        Assert.assertEquals("SELECT * FROM User T1 WHERE username LIKE 'Ga%' ", result);
     }
 
     @Test
     public void test_isValid_whenQuery_InList(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String[] list = {"a", "b", "c"};
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
                 .addCondition_In("firstName", list)
                 .getQuery();
 
         //Assert
-        Assert.assertEquals("SELECT * FROM User T1 WHERE firstName IN ('a', 'b', 'c' ) ", result);
+        Assert.assertEquals("SELECT * FROM User T1 WHERE firstName IN ('a', 'b', 'c') ", result);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void test_exceptionThrown_whenQuery_InList(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
         String[] list = {};
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
                 .addCondition_In("firstName", list)
                 .getQuery();
@@ -216,10 +213,10 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_InSubQuery(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
                 .addCondition_In("firstName", "query")
                 .getQuery();
@@ -231,12 +228,12 @@ public class QueryBuilderTest {
     @Test
     public void test_isValid_whenQuery_JOIN(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
-                .joinWith("type", JoinTypes.INNER)
+                .joinWith("type", QueryBuilder.JoinType.INNER)
                 .getQuery();
 
         //Assert
@@ -246,11 +243,11 @@ public class QueryBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void test_exceptionThrown_whenQuery_JOIN(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
-                .joinWith("type", JoinTypes.INNER)
+        String result = sut.returnFields()
+                .joinWith("type", QueryBuilder.JoinType.INNER)
                 .getQuery();
 
         //Assert
@@ -259,12 +256,12 @@ public class QueryBuilderTest {
     @Test
     public void test_exceptionThrown_whenQuery_JOINON(){
         //Arrange
-        sut.craftQuery();
+        sut.craftNewTransaction();
 
         //Act
-        String result = sut.returnAllFields()
+        String result = sut.returnFields()
                 .ofClassType("User")
-                .joinOn("type", JoinTypes.LEFT, "this", "that")
+                .joinOn("type", QueryBuilder.JoinType.LEFT, "this", "that")
                 .getQuery();
 
         //Assert
@@ -274,9 +271,10 @@ public class QueryBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void test_stringValidation_whenGiven_specialChar(){
         //Arrange
+        sut.craftNewTransaction();
 
         //Act
-        QueryBuilder.stringValidation("Wall$");
+        String result = sut.returnFields("Wall$").getQuery();
 
         //Assert
 
@@ -284,33 +282,46 @@ public class QueryBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     public void test_stringValidation_whenGiven_numericStart(){
         //Arrange
+        sut.craftNewTransaction();
 
         //Act
-        QueryBuilder.stringValidation("0Wall");
+        String result = sut.returnFields("0Wall").getQuery();
+
+        //Assert
 
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void test_stringValidation_whenGiven_numericStartempty(){
+        //Arrange
+        sut.craftNewTransaction();
 
         //Act
-        QueryBuilder.stringValidation("");
+        String result = sut.returnFields("").getQuery();
+
+        //Assert
 
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void test_conditionOperatorValidation_whenGiven_badOperator(){
         //Arrange
+        sut.craftNewTransaction();
 
         //Act
-        QueryBuilder.conditionOperatorValidation("==");
+        String result = sut.addCondition_Operator("this", "=>", "that", false).getQuery();
+
+        //Assert
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void test_conditionOperatorValidation_whenGiven_empty(){
         //Arrange
+        sut.craftNewTransaction();
 
         //Act
-        QueryBuilder.conditionOperatorValidation("");
+        String result = sut.addCondition_Operator("this", "", "that", false).getQuery();
+
+        //Assert
     }
 }

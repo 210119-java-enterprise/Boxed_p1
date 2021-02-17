@@ -4,6 +4,7 @@ import com.revature.model.Metamodel;
 import com.revature.utilities.Configuration;
 import com.revature.utilities.connection.ConnectionPool;
 import com.revature.utilities.connection.R4ConnectionPool;
+import com.revature.utilities.queries.Repository;
 import com.revature.utilities.queries.ResultSetParser;
 
 import java.lang.reflect.Constructor;
@@ -54,20 +55,18 @@ public class BlackBox {
         }
     }
 
-    //Queries -------------------------------------------------------
-    public boolean executeThisQuery(String sql){
-        //TODO: accept QueryString as parameter? Only if info required isn't available via metaData
-        try {
-            PreparedStatement pStmt = currentConnection.prepareStatement(sql);
-            rs = pStmt.executeQuery();
-            return true;
-        }catch(SQLException e){
-            System.out.println("Following SQL query failed: " + sql);
-            e.printStackTrace();
-        }
-        return false;
+    //Transactions --------------------------------------------------
+    public boolean runQuery(String sql){
+        rs = Repository.executeThisQuery(currentConnection, sql);
+        return rs != null;
     }
 
+    public boolean runUpdate(String sql){
+        int result = Repository.executeThisUpdate(currentConnection, sql);
+        return result > 0;
+    }
+
+    //ResultSet -----------------------------------------------------
     public String getQueryResultSummary(){
         return ResultSetParser.getSummary(rs);
     }

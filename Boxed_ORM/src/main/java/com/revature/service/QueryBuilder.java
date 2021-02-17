@@ -1,24 +1,28 @@
 package com.revature.service;
 
-import com.revature.model.queries.JoinTypes;
-import com.revature.model.queries.QueryString;
-
 /**
  *
  */
-public class QueryBuilder {
+public class QueryBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
-    //string bases for queries
-    String selectBase = "SELECT ";
-    String fromBase = "FROM ";
-    String whereBase = "WHERE ";
+    public enum StmtType {
+        SELECT, FROM, JOIN, WHERE;
 
-    //Allows recall of previously used or intermediary queries
-    QueryString qString;
-    StringBuilder query;
+        @Override
+        public String toString() { return name() + " ";}
+    }
+
+    public enum JoinType {
+        INNER, OUTER, FULL, LEFT, RIGHT;
+
+        @Override
+        public String toString() {
+            return name() + " ";
+        }
+    }
 
     //Save up to 3 queries
-    static QueryString[] speedDial = new QueryString[3];
+    static StringBuilder[] speedDial = new StringBuilder[3];
 
     //Track num entities
     int numTables = 0;
@@ -29,13 +33,13 @@ public class QueryBuilder {
 
     //Constructors --------------------------------------------------
     public QueryBuilder() {
-        qString = new QueryString();
+        statements = new StringBuilder[StmtType.values().length];
     }
 
-
-    public QueryBuilder craftQuery(){
-        qString = new QueryString();
-        query = new StringBuilder("");
+    public QueryBuilder craftNewTransaction(){
+        for (int i = 0; i < statements.length; i++) {
+            statements[i] = new StringBuilder("");
+        }
         numTables = 0;
         return this;
     }
@@ -43,16 +47,27 @@ public class QueryBuilder {
     public void saveQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
-        speedDial[i] = qString;
+        speedDial[i] = transaction;
     }
 
     public void loadQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
-        qString = speedDial[i];
+        transaction = speedDial[i];
     }
 
     //SELECT --------------------------------------------------------
+    /**
+     * Allows the user to add a basic SELECT statement that returns all columns in query
+     * format: SELECT *
+     * @return this QueryBuilder object
+     */
+    public QueryBuilder returnFields(){
+        statements[StmtType.SELECT.ordinal()]
+                .append(StmtType.SELECT.toString()).append("* ");
+        return this;
+    }
+
     /**
      * Allows user to specify which columns to get a return value from
      * format SELECT col1, col2, ...
@@ -64,30 +79,21 @@ public class QueryBuilder {
         if (ColumnNames == null || ColumnNames.length == 0){
             throw new IllegalArgumentException("Valid Column name required");
         }
-        stringValidation(ColumnNames);
+        isValidName(ColumnNames);
+
 
         int numColumns = ColumnNames.length;
-        qString.select.append(selectBase);
+        statements[StmtType.SELECT.ordinal()]
+                .append(StmtType.SELECT.toString());
+
         String append;
-        for (int i = 0; i < ColumnNames.length; i++) {
+        for (int i = 0; i < numColumns; i++) {
+            append = i < numColumns - 1 ? ", " : " ";
 
-            if (i < numColumns - 1 )
-                append = ", ";
-            else
-                append = " ";
-
-            qString.select.append(ColumnNames[i]).append(append);
+            statements[StmtType.SELECT.ordinal()]
+                    .append(ColumnNames[i])
+                    .append(append);
         }
-        return this;
-    }
-
-    /**
-     * Allows the user to add a basic SELECT statement that returns all columns in query
-     * format: SELECT *
-     * @return this QueryBuilder object
-     */
-    public QueryBuilder returnAllFields(){
-        qString.select.append(selectBase).append("* ");
         return this;
     }
 
@@ -101,9 +107,12 @@ public class QueryBuilder {
      */
     public QueryBuilder ofClassType(String entityName){
        //Validation
-        stringValidation(entityName);
+        isValidName(entityName);
 
-        qString.from.append(fromBase).append(entityName).append(" T1 ");
+        statements[StmtType.FROM.ordinal()]
+                .append(StmtType.FROM.toString())
+                .append(entityName).append(" T1 ");
+
         numTables++;
         return this;
     }
@@ -113,19 +122,21 @@ public class QueryBuilder {
      * five types a accepted via the JoinTypes enum{INNER, OUTER, FULL, LEFT, RIGHT}.
      * format: JOIN table T2
      * @param entityName The name of the table being added to the Query
-     * @param type the JOIN type
+     * @param joinType the JOIN type
      * @return this QueryBuilder object
      */
-    public QueryBuilder joinWith(String entityName, JoinTypes type){
+    public QueryBuilder joinWith(String entityName, JoinType joinType){
         //validation
-        stringValidation(entityName);
-
-        if (qString.from.toString().equals("")){
+        isValidName(entityName);
+        if (statements[StmtType.FROM.ordinal()].toString().equals(""))
             throw new IllegalArgumentException("Main entity being searched must be set first!");
-        }
+
         numTables++;
-        qString.join.append(type.name()).append(" JOIN ").append(entityName)
-                .append(" T").append(numTables).append(" ");
+        statements[StmtType.JOIN.ordinal()]
+                .append(joinType.toString())
+                .append(StmtType.JOIN.toString())
+                .append(entityName).append(" ")
+                .append("T").append(numTables).append(" ");
 
         return this;
     }
@@ -136,30 +147,37 @@ public class QueryBuilder {
      * to allow the user to decide which columns will be used for the JOIN
      * format: JOIN table T2 ON this = that
      * @param entityName The name of the table being added to the Query
-     * @param type the JOIN type
+     * @param joinType the JOIN type
      * @param mainClassField the column from the entity added in the FROM statement that will be used for the comparison
      * @param joinClassField the column from this entity that will be used for the comparison
      * @return this QueryBuilder object
      */
-    public QueryBuilder joinOn(String entityName, JoinTypes type, String mainClassField, String joinClassField){
+    public QueryBuilder joinOn(String entityName, JoinType joinType, String mainClassField, String joinClassField){
         //Validation
-        stringValidation(entityName, mainClassField, joinClassField);
-
-        if (qString.from.toString().equals("")){
+        isValidName(entityName, mainClassField, joinClassField);
+        if (statements[StmtType.FROM.ordinal()].toString().equals(""))
             throw new IllegalArgumentException("Main entity being searched must be set first!");
-        }
+
         numTables++;
-        qString.join.append(type.name()).append(" JOIN ").append(entityName)
-                .append(" T").append(numTables).append(" ");
-        qString.join.append("ON ").append("T1.").append(mainClassField).append(" ")
-                .append("= ").append("T2.").append(joinClassField).append(" ");
+        //Join statement
+        statements[StmtType.JOIN.ordinal()]
+                .append(joinType.toString())
+                .append(StmtType.JOIN.toString())
+                .append(entityName).append(" ")
+                .append("T").append(numTables).append(" ");
+        //On statement
+        statements[StmtType.JOIN.ordinal()]
+                .append("ON ")
+                .append("T1.").append(mainClassField).append(" ")
+                .append("= ")
+                .append("T2.").append(joinClassField).append(" ");
 
         return this;
     }
 
     //WHERE ---------------------------------------------------------
     /**
-     * Allows user to create a type of WHERE caluse that uses a condition operator like
+     * Allows user to create a type of WHERE clause that uses a condition operator like
      * <, >, <=, >=, =, <>, != to compare two columns
      * format: WHERE this = that
      * @param thisField the name of the Column on the left side of the condition operator
@@ -171,18 +189,25 @@ public class QueryBuilder {
     public QueryBuilder addCondition_Operator(String thisField, String conditionOperator,
                                               String thatField, boolean isString){
         //Validation
-        stringValidation(thisField, thatField);
-        conditionOperatorValidation(conditionOperator);
+        isValidName(thisField, thatField);
+        isValidConditionOperator(conditionOperator);
 
-        qString.where.append(whereBase)
-                     .append(thisField).append(" ")
-                     .append(conditionOperator).append(" ");
+        statements[StmtType.WHERE.ordinal()]
+                .append(StmtType.WHERE.toString())
+                .append(thisField).append(" ")
+                .append(conditionOperator).append(" ");
+
         if (isString)
-            qString.where.append("'");
-        qString.where.append(thatField);
+            statements[StmtType.WHERE.ordinal()]
+                    .append("'");
+        statements[StmtType.WHERE.ordinal()]
+                .append(thatField);
         if (isString)
-            qString.where.append("'");
-        qString.where.append(" ");
+            statements[StmtType.WHERE.ordinal()]
+                    .append("'");
+
+        statements[StmtType.WHERE.ordinal()]
+                .append(" ");
 
         return this;
     }
@@ -197,9 +222,10 @@ public class QueryBuilder {
      */
     public QueryBuilder addCondition_Between(String thisField, String lowerBound, String upperBound){
         //Validation
-        stringValidation(thisField);
+        isValidName(thisField);
 
-        qString.where.append(whereBase)
+        statements[StmtType.WHERE.ordinal()]
+                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("BETWEEN ")
                 .append(lowerBound).append(" ")
@@ -210,19 +236,20 @@ public class QueryBuilder {
 
     /**
      * Allows user to create a type of WHERE clause that uses LIKE for its conditional statement
-     * format: WHERE Column LIKE s%
+     * format: WHERE Column LIKE 's%'
      * @param thisField name of the column having the condition applied to it
      * @param comparison a string being matched against thisField via like operator
      * @return this QueryBuilder
      */
     public QueryBuilder addCondition_Like(String thisField, String comparison){
         //Validation
-        stringValidation(thisField);
+        isValidName(thisField);
 
-        qString.where.append(whereBase)
+        statements[StmtType.WHERE.ordinal()]
+                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("LIKE ")
-                .append(comparison).append(" ");
+                .append("'").append(comparison).append("' ");
         return this;
     }
 
@@ -238,24 +265,27 @@ public class QueryBuilder {
         //Validation
         if (listValues == null || listValues.length == 0)
             throw new IllegalArgumentException("IN condition requires a list or sub-query to search, empty lists are not accepted");
-        stringValidation(thisField);
+        isValidName(thisField);
 
         //Start string
-        qString.where.append(whereBase)
+        statements[StmtType.WHERE.ordinal()]
+                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
-                .append("IN (");
+                .append("IN ")
+                .append("(");
+
         //get values from list
-        String appendEnding;
+        String append;
         for (int i = 0; i < listValues.length; i++) {
-            qString.where.append("'").append(listValues[i]).append("'");
-            if (i < listValues.length - 1 )
-                appendEnding = ", ";
-            else
-                appendEnding = " ";
-            qString.where.append(appendEnding);
+            statements[StmtType.WHERE.ordinal()]
+                    .append("'").append(listValues[i]).append("'");
+            append = i < listValues.length - 1? ", " : "";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(append);
         }
         //finish string
-        qString.where.append(") ");
+        statements[StmtType.WHERE.ordinal()]
+                .append(") ");
         return this;
     }
 
@@ -268,13 +298,13 @@ public class QueryBuilder {
      */
     public QueryBuilder addCondition_In(String thisField, String subQuery){
         //Validation
-        stringValidation(thisField, subQuery);
+        isValidName(thisField, subQuery);
 
-        qString.where.append(whereBase)
+        statements[StmtType.WHERE.ordinal()]
+                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
-                .append("IN ");
-
-        qString.where.append("(").append(subQuery).append(") ");
+                .append("IN ")
+                .append("(").append(subQuery).append(") ");
         return this;
     }
 
@@ -284,13 +314,14 @@ public class QueryBuilder {
      * @return string holding constructed query
      */
     public String getQuery() {
-        if(!isValid())
+        transaction = new StringBuilder("");
+
+        if(!isValidTransaction())
             return "";
-        query.append(qString.select)
-                .append(qString.from)
-                .append(qString.join)
-                .append(qString.where);
-      return query.toString();
+        for (StringBuilder statement : statements) {
+            transaction.append(statement);
+        }
+      return transaction.toString();
     }
 
     //VALIDATE ------------------------------------------------------
@@ -298,39 +329,10 @@ public class QueryBuilder {
      * Ensures a query cannot be returned without a built Select and From statement
      * @return a boolean stating whether statement has a select and from statement
      */
-    public boolean isValid(){
-        boolean valid = true;
-        if (qString.select.toString().equals("") || qString.from.toString().equals(""))
-            valid = false;
-        return valid;
-    }
-
-    /**
-     * reject all empty strings and any string that is made from special chars or starts with a number
-     * @param args  string values to be tested
-     */
-    static void stringValidation(String... args){
-        for (String i: args) {
-            if(i == null || i.trim().equals(""))
-                throw new IllegalArgumentException("Arguments cannot be empty!");
-            if (!i.matches("[a-zA-Z_][a-zA-Z0-9_]*")){
-                throw new IllegalArgumentException("Only alphanumeric values and _ accepted as class or field names");
-            }
-        }
-    }
-
-    /**
-     * reject all empty strings and any string that is an invalid condition operator
-     * @param args  string values to be tested
-     */
-    static void conditionOperatorValidation(String ... args){
-        for (String i: args) {
-            if(i == null || i.trim().equals(""))
-                throw new IllegalArgumentException("Arguments cannot be empty!");
-            if (!i.matches("(=|<|>|<=|>=|!=|<>)")){
-                throw new IllegalArgumentException("Only <, >, =, <=, >=, !=, <> are accepted condition operators");
-            }
-        }
+    @Override
+    public boolean isValidTransaction(){
+        return !statements[StmtType.SELECT.ordinal()].toString().equals("")
+                && !statements[StmtType.FROM.ordinal()].toString().equals("");
     }
 
 }

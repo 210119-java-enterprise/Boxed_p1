@@ -3,8 +3,8 @@ package com.revature;
 
 import com.revature.service.BlackBox;
 import com.revature.service.QueryBuilder;
+import com.revature.service.UpdateBuilder;
 import com.revature.test_models.User;
-import org.postgresql.core.Query;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -27,42 +27,53 @@ public class Driver {
         }
         System.out.println("Step 3 complete\n");
 
-        //4.) Craft Query
-        QueryBuilder builder = new QueryBuilder();
-        String query = builder.craftQuery()
-                .returnAllFields()
-                .ofClassType("Users_demo")
-                .getQuery();
-        System.out.println(query);
-        System.out.println("Step 4 complete\n");
-
-        //5.)Execute Query
-        if (box.executeThisQuery(query)){
-
-        }else{
-            System.out.println("Query failed\n");
-        }
-        System.out.println("Step 5 complete\n");
-
-        //6.)Fetch Results
-        System.out.println("Result Summary --------------------------");
-        System.out.println(box.getQueryResultSummary());
-        User newUser = new User();
-        System.out.println("Results in OBJ --------------------------");
-        System.out.println(box.getResultInClass(newUser.getClass()).toString());
-        System.out.println("Step 6 complete\n");
-
-        //Get single field results
-        //Get multi field results
-        System.out.println("Result in List --------------------------");
-        box.executeThisQuery(query);
-        List<String[]> result = box.getResultInList();
-        for (String[] sa:result) {
-            System.out.println(Arrays.toString(sa));
-        }
+//        //4.) Craft Query
+//        QueryBuilder builder = new QueryBuilder();
+//        String query = builder.craftNewTransaction()
+//                .returnFields()
+//                .ofClassType("Users_demo")
+//                .getQuery();
+//        System.out.println(query);
+//        System.out.println("Step 4 complete\n");
+//
+//        //5.)Execute Query
+//        if (box.runQuery(query)){
+//
+//        }else{
+//            System.out.println("Query failed\n");
+//        }
+//        System.out.println("Step 5 complete\n");
+//
+//        //6.)Fetch Results
+//        System.out.println("Result Summary --------------------------");
+//        System.out.println(box.getQueryResultSummary());
+//        User newUser = new User();
+//        System.out.println("Results in OBJ --------------------------");
+//        System.out.println(box.getResultInClass(newUser.getClass()).toString());
+//        System.out.println("Step 6 complete\n");
+//
+//        //Get single field results
+//        //Get multi field results
+//        System.out.println("Result in List --------------------------");
+//        box.runQuery(query);
+//        List<String[]> result = box.getResultInList();
+//        for (String[] sa:result) {
+//            System.out.println(Arrays.toString(sa));
+//        }
 
         //INSERT
+        UpdateBuilder uBuilder = new UpdateBuilder();
+        String update = uBuilder.craftNewTransaction()
+                .setUpInsertTransaction("Users_demo", "first_name", "last_name", "email_address")
+                .addInsertValues("'Clark'", "'Giffin'", "'griffinCla@sonoma.edu'")
+                .addInsertValues("'Ravin'", "'Rayes'", "'reyesravin@sonoma.edu'")
+                .getInsertTransaction();
+
+        System.out.println(update);
+        box.runUpdate(update);
+
         //UPDATE
+
         //DELETE
 
 
