@@ -24,6 +24,7 @@ public class QueryBuilder extends TransactionBuilder{
     //statement stats
     private int numTables = 0;
     private int numConditions;
+    private boolean chainWithAnd = true;
 
     //Save up to 3 queries
     static StringBuilder[] speedDial = new StringBuilder[3];
@@ -179,6 +180,9 @@ public class QueryBuilder extends TransactionBuilder{
     }
 
     //WHERE ---------------------------------------------------------
+    public QueryBuilder switchToOR(){chainWithAnd = false; return this;}
+    public QueryBuilder switchToAND(){chainWithAnd = true; return this;}
+
     /**
      * Allows user to create a type of WHERE clause that uses a condition operator like
      * <, >, <=, >=, =, <>, != to compare two columns
@@ -195,11 +199,22 @@ public class QueryBuilder extends TransactionBuilder{
         isValidName(thisField, thatField);
         isValidConditionOperator(conditionOperator);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append(conditionOperator).append(" ");
 
+        //Wrap string literals
         if (isString)
             statements[StmtType.WHERE.ordinal()]
                     .append("'");
@@ -227,8 +242,18 @@ public class QueryBuilder extends TransactionBuilder{
         //Validation
         isValidName(thisField);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("BETWEEN ")
                 .append(lowerBound).append(" ")
@@ -248,8 +273,18 @@ public class QueryBuilder extends TransactionBuilder{
         //Validation
         isValidName(thisField);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("LIKE ")
                 .append("'").append(comparison).append("' ");
@@ -270,9 +305,19 @@ public class QueryBuilder extends TransactionBuilder{
             throw new IllegalArgumentException("IN condition requires a list or sub-query to search, empty lists are not accepted");
         isValidName(thisField);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         //Start string
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("IN ")
                 .append("(");
@@ -303,8 +348,18 @@ public class QueryBuilder extends TransactionBuilder{
         //Validation
         isValidName(thisField, subQuery);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("IN ")
                 .append("(").append(subQuery).append(") ");
