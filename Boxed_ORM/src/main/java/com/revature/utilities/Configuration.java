@@ -1,5 +1,6 @@
 package com.revature.utilities;
 
+import com.revature.annotations.CredentialsClass;
 import com.revature.model.Metamodel;
 
 import java.io.FileReader;
@@ -13,7 +14,10 @@ import java.util.*;
 public class Configuration {
     //Attributes -------------------------------------------------
     private Properties props = new Properties();
+
     private String dbUrl, dbUsername, dbPassword, dbSchema;
+    private String loginCredentialFields;
+
     private List<Class> preloadedEntities;
     private List<Metamodel<Class<?>>> metamodelList;
 
@@ -34,13 +38,18 @@ public class Configuration {
         String[] annotatedEntityLocations= CSV.split(",");
         for (String s : annotatedEntityLocations){
             try {
-                metamodelList.add(Metamodel.of((Class) Class.forName(s)));
+                Metamodel meta = Metamodel.of((Class) Class.forName(s));
+                metamodelList.add(meta);
+                if (meta.isLogOnCredentials()){
+                    loginCredentialFields = meta.getEntityName() + meta.getCredentialFields();
+                }
+
             }catch (ClassNotFoundException e){
                 System.out.println("Entity Class listed in Configuration File not Found");
             }
         }
 
-
+        System.out.println("Login credentials class name: " + loginCredentialFields);
     }
 
     //Getters and Setters -------------------------------------------
@@ -60,6 +69,12 @@ public class Configuration {
         return dbSchema;
     }
 
+    public String getLoginCredEntityName() {
+        return loginCredentialFields;
+    }
+
+
+    //Other --------------------------------------------------------
     public Metamodel<Class<?>> getMatchingMetamodel(Class<?> model){
         for (Metamodel<Class<?>> mm:metamodelList) {
             if(mm.getClassName().equals(model.getSimpleName())){
@@ -69,7 +84,6 @@ public class Configuration {
         return null;
     }
 
-    //Other --------------------------------------------------------
     public Configuration addAnnotatedClass(Class annotatedClass) {
         if (metamodelList == null) {
             metamodelList = new LinkedList<>();

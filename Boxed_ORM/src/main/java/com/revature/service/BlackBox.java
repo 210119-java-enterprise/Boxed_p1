@@ -4,10 +4,9 @@ import com.revature.model.Metamodel;
 import com.revature.utilities.Configuration;
 import com.revature.utilities.connection.ConnectionPool;
 import com.revature.utilities.connection.R4ConnectionPool;
-import com.revature.utilities.queries.Repository;
+import com.revature.repository.Repository;
 import com.revature.utilities.queries.ResultSetParser;
 
-import java.lang.reflect.Constructor;
 import java.net.ConnectException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,10 +15,11 @@ import java.util.List;
 public class BlackBox {
     //Attributes ----------------------------------------------------
     private Configuration config;
+
     private ConnectionPool connectionPool;
     private Connection currentConnection;
-    private ResultSet rs;
 
+    private final Repository repo;
 
     //Constructors --------------------------------------------------
     public BlackBox(String configLocation) {
@@ -34,6 +34,8 @@ public class BlackBox {
             e.printStackTrace();
             System.out.println("Unable to create a connection to database, check config file for login credentials.");
         }
+
+        repo = new Repository(config);
     }
 
     //Connection ----------------------------------------------------
@@ -55,42 +57,36 @@ public class BlackBox {
         }
     }
 
-    //Transactions --------------------------------------------------
-    public boolean runQuery(String sql){
-        rs = Repository.executeThisQuery(currentConnection, sql);
-        return rs != null;
+    //Queries -------------------------------------------------------
+    public <T> T authenticateLogin(Class<T> model, String username, String password){
+        repo.executeLoginQuery(currentConnection, username, password);
+        return repo.getLoginUser(model);
     }
 
-    public boolean runUpdate(String sql){
-        int result = Repository.executeThisUpdate(currentConnection, sql);
+    //Insert --------------------------------------------------------
+    public <T> boolean insert(Class<T> model){
+        int result = repo.executeInsert(currentConnection, model);
+        return result > 0;
+    }
+
+    //Transactions --------------------------------------------------
+    public void runQuery(){
+        repo.executeQuery(currentConnection);
+    }
+
+    public boolean runInsert(){
+        int result = repo.executeInsert(currentConnection);
         return result > 0;
     }
 
     //ResultSet -----------------------------------------------------
-    public String getQueryResultSummary(){
-        return ResultSetParser.getSummary(rs);
-    }
-
-    public <T> List<T> getResultInClass(Class<T> model){
-        Metamodel <Class<?>> meta = config.getMatchingMetamodel(model);
-
-        List<T> list = new ArrayList<T>();
-
-        try {
-            while(rs.next()){
-                T t = model.newInstance();
-                //noinspection unchecked
-                list.add((T) ResultSetParser.getObjFromResult(t, meta.getActiveFields(), rs));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-    public List<String[]> getResultInList(){
-        return ResultSetParser.getListFromResult(rs);
-    }
+//    public String getQueryResultSummary(){
+//        return ResultSetParser.getSummary(rs);
+//    }
+//
+    //
+//    public List<String[]> getResultInList(){
+//        return ResultSetParser.getListFromResult(rs);
+//    }
 
 }

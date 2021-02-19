@@ -1,4 +1,4 @@
-package com.revature.service;
+package com.revature.utilities.queries;
 
 public interface SQLTransaction {
     //VALIDATE ------------------------------------------------------

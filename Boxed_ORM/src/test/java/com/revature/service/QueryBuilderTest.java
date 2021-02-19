@@ -1,5 +1,6 @@
 package com.revature.service;
 
+import com.revature.utilities.queries.QueryBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

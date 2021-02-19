@@ -1,4 +1,4 @@
-package com.revature.service;
+package com.revature.utilities.queries;
 
 /**
  *
@@ -27,7 +27,7 @@ public class QueryBuilder extends TransactionBuilder{
     private boolean chainWithAnd = true;
 
     //Save up to 3 queries
-    static StringBuilder[] speedDial = new StringBuilder[3];
+    static String[] speedDial = new String[3];
 
 
     //TODO: add aliases for select statements
@@ -51,13 +51,13 @@ public class QueryBuilder extends TransactionBuilder{
     public void saveQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
-        speedDial[i] = transaction;
+        speedDial[i] = getQuery();
     }
 
     public void loadQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
-        transaction = speedDial[i];
+        transaction = new StringBuilder(speedDial[i]);
     }
 
     //SELECT --------------------------------------------------------

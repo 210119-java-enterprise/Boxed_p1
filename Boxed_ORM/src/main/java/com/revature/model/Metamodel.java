@@ -1,9 +1,6 @@
 package com.revature.model;
 
-import com.revature.annotations.Column;
-import com.revature.annotations.Column_FK;
-import com.revature.annotations.Column_PK;
-import com.revature.annotations.Entity;
+import com.revature.annotations.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -88,8 +85,23 @@ public class Metamodel <T>{
         return foreignKeyFields;
     }
 
-    //Other ---------------------------------------------------------
+    public String getCredentialFields(){
+        String response = "";
+        if (isLogOnCredentials()){
+            System.out.println("in getCredentialFields : isLogOnCredentials");
+            for (Field field:getActiveFields()) {
+                if (field.getAnnotation(Credential.class) != null)
+                    response += ":" + field.getAnnotation(Column.class).columnName();
+            }
+        }
+        System.out.println("Meta response: " + response);
+            return response;
+    }
 
+    //Other ---------------------------------------------------------
+    public boolean isLogOnCredentials(){
+        return clazz.getAnnotation(CredentialsClass.class) != null;
+    }
 
 
 }

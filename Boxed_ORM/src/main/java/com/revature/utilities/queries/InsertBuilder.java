@@ -1,13 +1,13 @@
-package com.revature.service;
+package com.revature.utilities.queries;
 
 
 /**
  *
  */
-public class UpdateBuilder extends TransactionBuilder{
+public class InsertBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
-    public enum StmtTypes {
-        INSERT, VALUES, UPDATE, DELETE;
+    public enum StmtType {
+        INSERT, VALUES;
 
         @Override
         public String toString(){ return name() + " ";}
@@ -16,11 +16,11 @@ public class UpdateBuilder extends TransactionBuilder{
 
 
     //Constructors --------------------------------------------------
-    public UpdateBuilder() {
-        statements = new StringBuilder[StmtTypes.values().length];
+    public InsertBuilder() {
+        statements = new StringBuilder[StmtType.values().length];
     }
 
-    public UpdateBuilder craftNewTransaction(){
+    public InsertBuilder craftNewTransaction(){
         for (int i = 0; i < statements.length; i++) {
             statements[i] = new StringBuilder("");
         }
@@ -34,12 +34,12 @@ public class UpdateBuilder extends TransactionBuilder{
      * @param ofClassType
      * @return
      */
-    public UpdateBuilder setUpEntry(String ofClassType){
+    public InsertBuilder insertType(String ofClassType){
         //Validate
         isValidName(ofClassType);
 
-        statements[StmtTypes.INSERT.ordinal()]
-                .append(StmtTypes.INSERT.toString())
+        statements[StmtType.INSERT.ordinal()]
+                .append(StmtType.INSERT.toString())
                 .append("INTO ")
                 .append(ofClassType).append(" ");
 
@@ -52,13 +52,13 @@ public class UpdateBuilder extends TransactionBuilder{
      * @param forFields
      * @return
      */
-    public UpdateBuilder setUpInsertTransaction(String ofClassType, String ... forFields){
+    public InsertBuilder insertFieldNames(String ofClassType, String ... forFields){
         //Validate
         isValidName(ofClassType);
         isValidName(forFields);
 
-        statements[StmtTypes.INSERT.ordinal()]
-                .append(StmtTypes.INSERT.toString())
+        statements[StmtType.INSERT.ordinal()]
+                .append(StmtType.INSERT.toString())
                 .append("INTO ")
                 .append(ofClassType).append(" ")
                 .append("(");
@@ -66,38 +66,38 @@ public class UpdateBuilder extends TransactionBuilder{
         String append;
         for (int i = 0; i < forFields.length; i++) {
             append = i < forFields.length - 1? ", " : "";
-            statements[StmtTypes.INSERT.ordinal()]
+            statements[StmtType.INSERT.ordinal()]
                     .append(forFields[i]).append(append);
         }
 
-        statements[StmtTypes.INSERT.ordinal()]
+        statements[StmtType.INSERT.ordinal()]
                 .append(") ");
         return this;
     }
 
-    public UpdateBuilder addInsertValues(String ... fieldValues){
+    public InsertBuilder insertValues(String ... fieldValues){
         numEntries++;
 
         //Allowing for a list of new entries
         if (numEntries > 1)
-            statements[StmtTypes.VALUES.ordinal()]
+            statements[StmtType.VALUES.ordinal()]
                     .append(", ");
         else {
             //Start statement
-            statements[StmtTypes.VALUES.ordinal()]
-                    .append(StmtTypes.VALUES.toString());
+            statements[StmtType.VALUES.ordinal()]
+                    .append(StmtType.VALUES.toString());
         }
-         statements[StmtTypes.VALUES.ordinal()].append("(");
+         statements[StmtType.VALUES.ordinal()].append("(");
 
         //Parse list of data to be entered
         String append;
         for (int i = 0; i < fieldValues.length; i++) {
             append = i < fieldValues.length - 1? ", " : "";
-            statements[StmtTypes.VALUES.ordinal()]
+            statements[StmtType.VALUES.ordinal()]
                     .append(fieldValues[i]).append(append);
         }
         //End statement
-        statements[StmtTypes.VALUES.ordinal()]
+        statements[StmtType.VALUES.ordinal()]
                 .append(")");
 
         return this;
@@ -106,17 +106,16 @@ public class UpdateBuilder extends TransactionBuilder{
     public String getInsertTransaction (){
         transaction = new StringBuilder("");
 
-        transaction.append(statements[StmtTypes.INSERT.ordinal()])
-                .append(statements[StmtTypes.VALUES.ordinal()]);
+        if (isValidTransaction())
+            transaction.append(statements[StmtType.INSERT.ordinal()])
+                    .append(statements[StmtType.VALUES.ordinal()]);
 
         return transaction.toString();
     }
 
-    //UPDATE --------------------------------------------------------
-
-
     @Override
     public boolean isValidTransaction() {
-        return false;
+        return !statements[InsertBuilder.StmtType.INSERT.ordinal()].toString().equals("")
+                && !statements[InsertBuilder.StmtType.VALUES.ordinal()].toString().equals("");
     }
 }
