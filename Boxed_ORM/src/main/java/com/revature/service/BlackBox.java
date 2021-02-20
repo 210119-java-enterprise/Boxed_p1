@@ -64,8 +64,8 @@ public class BlackBox {
     }
 
     //Insert --------------------------------------------------------
-    public <T> boolean insert(Class<T> model){
-        int result = repo.executeInsert(currentConnection, model);
+    public <T> boolean insert(T obj){
+        int result = repo.executeInsert(currentConnection, obj);
         return result > 0;
     }
 

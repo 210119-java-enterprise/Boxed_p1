@@ -25,8 +25,11 @@ public class Driver {
             e.printStackTrace();
         }
         System.out.println("Step 3 complete\n");
-        User newUser = box.authenticateLogin(User.class, "Gab", "Moon");
+        //User newUser = box.authenticateLogin(User.class, "Gab", "Moon");
+        User newUser = new User("gabby", "luna", "lunagab@sonoma.edu");
         System.out.println(newUser.toString());
+
+        box.insert(newUser);
 
 //        //4.) Craft Query
 //        QueryBuilder builder = new QueryBuilder();
