@@ -49,37 +49,7 @@ public class InsertBuilder extends TransactionBuilder{
         return this;
     }
 
-//    /**
-//     *
-//     * @param ofClassType
-//     * @param forFields
-//     * @return
-//     */
-//    public InsertBuilder insertFieldNames(String ofClassType, String ... forFields){
-//        //Validate
-//        isValidName(ofClassType);
-//        isValidName(forFields);
-//
-//        statements[StmtType.INSERT.ordinal()]
-//                .append(StmtType.INSERT.toString())
-//                .append("INTO ")
-//                .append(ofClassType).append(" ")
-//                .append("(");
-//
-//        //TODO: FIX THIS SHIT, NEEDS TO BE 2 SEPERATE METHODS
-//        String append;
-//        for (int i = 0; i < forFields.length; i++) {
-//            append = i < forFields.length - 1? ", " : "";
-//            statements[StmtType.INSERT.ordinal()]
-//                    .append(forFields[i]).append(append);
-//        }
-//
-//        statements[StmtType.INSERT.ordinal()]
-//                .append(") ");
-//        return this;
-//    }
-
-    public InsertBuilder insertKeyValuePair(String key, String value, boolean isString){
+    public InsertBuilder insertKeyValuePair(String key, String value, boolean isString) {
         numKVPairs ++;
         colListed = true;
 
@@ -115,30 +85,6 @@ public class InsertBuilder extends TransactionBuilder{
 
         return this;
     }
-
-//    public InsertBuilder insertValues(String ... fieldValues){
-//        numEntries++;
-//
-//        //Allowing for a list of new entries
-//        if (numEntries > 1)
-//            statements[StmtType.VALUES.ordinal()]
-//                    .append("), ");
-//        else {
-//            //Start statement
-//            statements[StmtType.VALUES.ordinal()]
-//                    .append(StmtType.VALUES.toString());
-//        }
-//         statements[StmtType.VALUES.ordinal()].append("(");
-//
-//        //Parse list of data to be entered
-//        String append;
-//        for (int i = 0; i < fieldValues.length; i++) {
-//            append = i < fieldValues.length - 1? ", " : "";
-//            statements[StmtType.VALUES.ordinal()]
-//                    .append(fieldValues[i]).append(append);
-//        }
-//        return this;
-//    }
 
     public String getInsertTransaction (){
         transaction = new StringBuilder("");

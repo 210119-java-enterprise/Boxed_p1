@@ -41,6 +41,7 @@ public class Configuration {
                 Metamodel meta = Metamodel.of((Class) Class.forName(s));
                 metamodelList.add(meta);
                 if (meta.isLogOnCredentials()){
+                    System.out.println("Log on credentials class: " + meta.getClassName());
                     loginCredentialFields = meta.getEntityName() + meta.getCredentialFields();
                 }
 

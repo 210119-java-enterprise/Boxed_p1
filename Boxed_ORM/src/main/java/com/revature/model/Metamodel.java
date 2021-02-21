@@ -88,7 +88,6 @@ public class Metamodel <T>{
     public String getCredentialFields(){
         String response = "";
         if (isLogOnCredentials()){
-            System.out.println("in getCredentialFields : isLogOnCredentials");
             for (Field field:getActiveFields()) {
                 if (field.getAnnotation(Credential.class) != null)
                     response += ":" + field.getAnnotation(Column.class).columnName();

@@ -17,7 +17,7 @@ public abstract class TransactionBuilder implements SQLTransaction {
             if(i == null || i.trim().equals(""))
                 throw new IllegalArgumentException("Arguments cannot be empty!");
             if (!i.matches("[a-zA-Z_][a-zA-Z0-9_]*") && !i.matches("[?]")){
-                throw new IllegalArgumentException("Only alphanumeric values and _ accepted as class or field names : " + i);
+                throw new IllegalArgumentException("Only alphanumeric values and _ accepted as class or field names, values may contain numbers but not start with them : " + i);
             }
         }
     }

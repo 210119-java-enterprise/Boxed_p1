@@ -196,7 +196,7 @@ public class QueryBuilder extends TransactionBuilder{
     public QueryBuilder addCondition_Operator(String thisField, String conditionOperator,
                                               String thatField, boolean isString){
         //Validation
-        isValidName(thisField, thatField);
+        isValidName(thisField);
         isValidConditionOperator(conditionOperator);
 
         //Allow for condition chaining

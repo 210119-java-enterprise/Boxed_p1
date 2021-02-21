@@ -1,14 +1,13 @@
 package com.revature.utilities.queries;
 
 import com.revature.annotations.Column;
-import com.revature.annotations.Column_PK;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -57,7 +56,7 @@ public class ResultSetParser {
 
         for (Field field: fields) {
             //Allows access to private fields
-            field.setAccessible(true);    //?
+            field.setAccessible(true);
 
             Column column = field.getAnnotation(Column.class);
 
@@ -65,10 +64,18 @@ public class ResultSetParser {
             Class<?> type = field.getType();
 
             if (isPrimitive(type)){
+                System.out.println(" current type : " + type.getName());
                 Class<?> boxed = boxPrimitiveClass(type);
-                value = boxed.cast(value);
+                System.out.println(" current box type : " + boxed.getSimpleName());
+                System.out.println(" current value type : " + value.getClass());
+                if (boxed.getSimpleName().equals("Double")){
+                    System.out.println("In catch block");
+                    BigDecimal bd = (BigDecimal) value;
+                    value = bd.doubleValue();
+                }else
+                    value = boxed.cast(value);
             }
-
+            System.out.println("value: " + value + " value type " + value.getClass());
             field.set(obj, value);
         }
 

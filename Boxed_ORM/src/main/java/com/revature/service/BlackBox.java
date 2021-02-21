@@ -1,11 +1,9 @@
 package com.revature.service;
 
-import com.revature.model.Metamodel;
 import com.revature.utilities.Configuration;
 import com.revature.utilities.connection.ConnectionPool;
 import com.revature.utilities.connection.R4ConnectionPool;
 import com.revature.repository.Repository;
-import com.revature.utilities.queries.ResultSetParser;
 
 import java.net.ConnectException;
 import java.sql.*;
@@ -60,12 +58,34 @@ public class BlackBox {
     //Queries -------------------------------------------------------
     public <T> T authenticateLogin(Class<T> model, String username, String password){
         repo.executeLoginQuery(currentConnection, username, password);
-        return repo.getLoginUser(model);
+        return repo.getResultInObj(model);
+    }
+
+    public <T> T getFieldValue (String searchFieldName, T obj){
+        try {
+            repo.buildQueryToReturnField(obj, searchFieldName);
+        }catch(IllegalAccessException e){
+            e.printStackTrace();
+        }
+        repo.executeQuery(currentConnection);
+        return (T) repo.getResultInObj(obj.getClass());
+    }
+
+    public <T> List<T> getObjsMatchingId(String searchFieldName, String value, boolean isString, T obj){
+        System.out.println("In getObjsMatchingId: ");
+        repo.buildQueryToReturnObjectById(obj, searchFieldName, value, isString);
+        repo.executeQuery(currentConnection);
+        return repo.getResultInList(obj);
     }
 
     //Insert --------------------------------------------------------
     public <T> boolean insert(T obj){
-        int result = repo.executeInsert(currentConnection, obj);
+        try {
+            repo.buildInsertForObj(obj);
+        }catch(IllegalAccessException e){
+            e.printStackTrace();
+        }
+        int result = repo.executeInsert(currentConnection);
         return result > 0;
     }
 

@@ -2,14 +2,13 @@ package com.revature.repository;
 
 import com.revature.annotations.Column;
 import com.revature.annotations.Entity;
+import com.revature.annotations.Generated;
 import com.revature.model.Metamodel;
 import com.revature.utilities.Configuration;
 import com.revature.utilities.queries.InsertBuilder;
 import com.revature.utilities.queries.QueryBuilder;
 import com.revature.utilities.queries.ResultSetParser;
-import sun.reflect.misc.ReflectUtil;
 
-import javax.xml.transform.Result;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,8 +43,49 @@ public class Repository {
     }
 
     //Build Query ---------------------------------------------------
+    public <T> void buildQueryToReturnField(T obj, String fieldName) throws IllegalAccessException {
+        //start query statement
+        queryBuilder.craftNewTransaction()
+                .ofClassType(obj.getClass().getAnnotation(Entity.class).tableName());
+
+        Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
+        List<Field> activeFields = meta.getActiveFields();
+        for (Field field :activeFields) {
+            field.setAccessible(true);
+            Object value = field.get(obj);
+            if (field.getName().equals(fieldName))
+                queryBuilder.returnFields(field.getAnnotation(Column.class).columnName());
+            if (value != null) {
+                queryBuilder.addCondition_Operator(field.getAnnotation(Column.class).columnName(),
+                        "=", value.toString(), value.getClass() == String.class);
+            }
+        }
+    }
+
+    public <T> void buildQueryToReturnObjectById(T obj, String searchFieldName, String searchFieldValue, boolean isString){
+        //start query statement
+        queryBuilder.craftNewTransaction()
+                .ofClassType(obj.getClass().getAnnotation(Entity.class).tableName())
+                .returnFields();
+        System.out.println("In buildQueryToReturnObjectById : ");
+        //Add search parameters
+        Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
+        List<Field> activeFields = meta.getActiveFields();
+        for (Field field : activeFields) {
+            field.setAccessible(true);
+            System.out.println(field.getName() + " =? " + searchFieldName);
+            if (field.getName().equals(searchFieldName)){
+                System.out.println("in field == searchFieldName");
+                queryBuilder.addCondition_Operator(field.getAnnotation(Column.class).columnName(),
+                        "=", searchFieldValue, isString);
+                break;
+            }
+        }
+    }
+
+
     //Build Insert --------------------------------------------------
-    private <T> void buildInsert(T obj) throws IllegalAccessException{
+    public <T> void buildInsertForObj(T obj) throws IllegalAccessException{
         //start insert statement
         insertBuilder.craftNewTransaction()
                     .insertType(obj.getClass().getAnnotation(Entity.class).tableName());
@@ -55,7 +95,7 @@ public class Repository {
         for (Field field: activeFields) {
             field.setAccessible(true);
             Object value = field.get(obj);
-            if (value != null) {
+            if (value != null && field.getAnnotation(Generated.class) == null) {
                 insertBuilder.insertKeyValuePair(field.getAnnotation(Column.class).columnName(),
                         value.toString(), value.getClass() == String.class);
             }
@@ -86,6 +126,7 @@ public class Repository {
 
     public void executeQuery(Connection connection){
         String sql = queryBuilder.getQuery();
+        System.out.println(sql);
         try {
             PreparedStatement pStmt = connection.prepareStatement(sql);
             result =  pStmt.executeQuery();
@@ -107,17 +148,8 @@ public class Repository {
         return -1;
     }
 
-    public <T> int executeInsert(Connection connection, T obj){
-        try{
-            buildInsert(obj);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return executeInsert(connection);
-    }
-
     //Retrieve ------------------------------------------------------
-    public <T> T getLoginUser(Class<T> model){
+    public <T> T getResultInObj(Class<T> model){
         if (result != null){
             Metamodel<Class<?>> meta = config.getMatchingMetamodel(model);
             try {
@@ -133,4 +165,25 @@ public class Repository {
         return null;
     }
 
+    public <T> List<T> getResultInList(T obj){
+        System.out.println("In getResultInList : ");
+        List<T> list = new ArrayList<>();
+
+        if (result != null){
+            Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
+            try{
+                while(result.next()){
+                    T t = (T) obj.getClass().newInstance();
+                    System.out.println(t.toString());
+                    //noinspection unchecked
+                    list.add((T) ResultSetParser.getObjFromResult(t, meta.getActiveFields(), result));
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return list;
+    }
+
 }
+
