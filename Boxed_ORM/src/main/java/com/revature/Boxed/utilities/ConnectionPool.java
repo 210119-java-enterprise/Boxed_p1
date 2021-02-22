@@ -1,4 +1,4 @@
-package com.revature.utilities.connection;
+package com.revature.Boxed.utilities;
 
 import java.sql.Connection;
 import java.sql.SQLException;

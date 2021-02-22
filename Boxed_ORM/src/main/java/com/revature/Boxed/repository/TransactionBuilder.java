@@ -1,4 +1,4 @@
-package com.revature.service;
+package com.revature.Boxed.repository;
 
 public abstract class TransactionBuilder implements SQLTransaction {
     StringBuilder transaction;
@@ -12,12 +12,12 @@ public abstract class TransactionBuilder implements SQLTransaction {
     public abstract boolean isValidTransaction();
 
     @Override
-    public void isValidName(String... args) {
+    public void isValidName(String... args)throws IllegalArgumentException {
         for (String i: args) {
             if(i == null || i.trim().equals(""))
                 throw new IllegalArgumentException("Arguments cannot be empty!");
-            if (!i.matches("[a-zA-Z_][a-zA-Z0-9_]*")){
-                throw new IllegalArgumentException("Only alphanumeric values and _ accepted as class or field names");
+            if (!i.matches("[a-zA-Z_][a-zA-Z0-9_]*") && !i.matches("[?]")){
+                throw new IllegalArgumentException("Only alphanumeric values and _ accepted as class or field names, values may contain numbers but not start with them : " + i);
             }
         }
     }
@@ -28,7 +28,7 @@ public abstract class TransactionBuilder implements SQLTransaction {
             if(i == null || i.trim().equals(""))
                 throw new IllegalArgumentException("Arguments cannot be empty!");
             if (!i.matches("(=|<|>|<=|>=|!=|<>)")){
-                throw new IllegalArgumentException("Only <, >, =, <=, >=, !=, <> are accepted condition operators");
+                throw new IllegalArgumentException("Only <, >, =, <=, >=, !=, <> are accepted condition operators : " + i);
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.revature.service;
+package com.revature.Boxed.repository;
 
 public interface SQLTransaction {
     //VALIDATE ------------------------------------------------------

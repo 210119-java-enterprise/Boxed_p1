@@ -1,4 +1,4 @@
-package com.revature.service;
+package com.revature.Boxed.repository;
 
 /**
  *
@@ -21,11 +21,14 @@ public class QueryBuilder extends TransactionBuilder{
         }
     }
 
-    //Save up to 3 queries
-    static StringBuilder[] speedDial = new StringBuilder[3];
+    //statement stats
+    private int numTables = 0;
+    private int numConditions;
+    private boolean chainWithAnd = true;
 
-    //Track num entities
-    int numTables = 0;
+    //Save up to 3 queries
+    static String[] speedDial = new String[3];
+
 
     //TODO: add aliases for select statements
     //TODO: add aggregate functions
@@ -41,19 +44,20 @@ public class QueryBuilder extends TransactionBuilder{
             statements[i] = new StringBuilder("");
         }
         numTables = 0;
+        numConditions = 0;
         return this;
     }
 
     public void saveQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
-        speedDial[i] = transaction;
+        speedDial[i] = getQuery();
     }
 
     public void loadQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
-        transaction = speedDial[i];
+        transaction = new StringBuilder(speedDial[i]);
     }
 
     //SELECT --------------------------------------------------------
@@ -176,6 +180,9 @@ public class QueryBuilder extends TransactionBuilder{
     }
 
     //WHERE ---------------------------------------------------------
+    public QueryBuilder switchToOR(){chainWithAnd = false; return this;}
+    public QueryBuilder switchToAND(){chainWithAnd = true; return this;}
+
     /**
      * Allows user to create a type of WHERE clause that uses a condition operator like
      * <, >, <=, >=, =, <>, != to compare two columns
@@ -189,14 +196,25 @@ public class QueryBuilder extends TransactionBuilder{
     public QueryBuilder addCondition_Operator(String thisField, String conditionOperator,
                                               String thatField, boolean isString){
         //Validation
-        isValidName(thisField, thatField);
+        isValidName(thisField);
         isValidConditionOperator(conditionOperator);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append(conditionOperator).append(" ");
 
+        //Wrap string literals
         if (isString)
             statements[StmtType.WHERE.ordinal()]
                     .append("'");
@@ -224,8 +242,18 @@ public class QueryBuilder extends TransactionBuilder{
         //Validation
         isValidName(thisField);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("BETWEEN ")
                 .append(lowerBound).append(" ")
@@ -245,8 +273,18 @@ public class QueryBuilder extends TransactionBuilder{
         //Validation
         isValidName(thisField);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("LIKE ")
                 .append("'").append(comparison).append("' ");
@@ -267,9 +305,19 @@ public class QueryBuilder extends TransactionBuilder{
             throw new IllegalArgumentException("IN condition requires a list or sub-query to search, empty lists are not accepted");
         isValidName(thisField);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         //Start string
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("IN ")
                 .append("(");
@@ -300,8 +348,18 @@ public class QueryBuilder extends TransactionBuilder{
         //Validation
         isValidName(thisField, subQuery);
 
+        //Allow for condition chaining
+        numConditions++;
+        if(numConditions == 1){
+            statements[StmtType.WHERE.ordinal()]
+                    .append(StmtType.WHERE.toString());
+        }else{
+            String condition = chainWithAnd? "AND " : "OR ";
+            statements[StmtType.WHERE.ordinal()]
+                    .append(condition);
+        }
+
         statements[StmtType.WHERE.ordinal()]
-                .append(StmtType.WHERE.toString())
                 .append(thisField).append(" ")
                 .append("IN ")
                 .append("(").append(subQuery).append(") ");

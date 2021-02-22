@@ -1,8 +1,8 @@
-package com.revature.test_models;
+package com.revature.Boxed.test_models;
 
-import com.revature.annotations.*;
+import com.revature.Boxed.annotations.*;
 
-import static com.revature.model.ColumnType.*;
+import static com.revature.Boxed.model.ColumnType.*;
 
 /**
  * Demo class for testing purposes, shouldn't be in final package
@@ -11,6 +11,7 @@ import static com.revature.model.ColumnType.*;
  * @author Gabrielle Luna
  */
 @Entity(tableName = "users_demo")
+@CredentialsClass
 public class User {
 
     @Column(type = PK, columnName = "id")
@@ -25,6 +26,16 @@ public class User {
 
     @Column(type = DEFAULT, columnName = "email_address")
     private String emailAddress;
+
+    //USERNAME must be listed first to work
+
+    @Column(type = DEFAULT, columnName = "username")
+    @Credential
+    private String username;
+
+    @Column(type = DEFAULT, columnName = "password")
+    @Credential
+    private String password;
 
 //    @Column_FK(columnName = "test_relation")
 //    private Test testRelation;

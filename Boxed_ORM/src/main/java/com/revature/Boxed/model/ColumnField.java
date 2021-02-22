@@ -1,7 +1,8 @@
-package com.revature.model;
+package com.revature.Boxed.model;
 
-import com.revature.annotations.Column;
-import com.revature.annotations.Generated;
+import com.revature.Boxed.annotations.Column;
+import com.revature.Boxed.annotations.Credential;
+import com.revature.Boxed.annotations.Generated;
 
 import java.lang.reflect.Field;
 
@@ -12,7 +13,7 @@ import java.lang.reflect.Field;
 public class ColumnField {
     //Attributes -------------------------------------------------
     private final Field field;
-    private final boolean isDefault;
+    private final boolean isDefault, isCredential;
 
     //Constructors -------------------------------------------------
     public ColumnField (Field field) {
@@ -24,6 +25,7 @@ public class ColumnField {
 
         //check for Default annotation on field before assigning
         isDefault = field.getAnnotation(Generated.class) != null;
+        isCredential = field.getAnnotation(Credential.class) != null;
     }
 
     //Getters and Setters------------------------------------------
@@ -34,4 +36,8 @@ public class ColumnField {
     public String getColumnName() { return field.getAnnotation(Column.class).columnName();}
 
     public boolean isDefault() { return isDefault; }
+
+    public boolean isCredential() {
+        return isCredential;
+    }
 }

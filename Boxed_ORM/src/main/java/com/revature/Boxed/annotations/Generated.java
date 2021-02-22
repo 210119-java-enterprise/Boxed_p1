@@ -1,4 +1,4 @@
-package com.revature.annotations;
+package com.revature.Boxed.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,10 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies primary key FIELD of POJO. Accessible at RUNTIME
+ * marks values that will have a default value set by the database
+ * if one is not provided
+ *
+ * @author Gabrielle Luna
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Column_PK {
-    String columnName();
+public @interface Generated {
 }

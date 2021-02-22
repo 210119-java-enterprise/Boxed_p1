@@ -1,14 +1,14 @@
-package com.revature.utilities.queries;
+package com.revature.Boxed.repository;
 
-import com.revature.annotations.Column;
-import com.revature.annotations.Column_PK;
+import com.revature.Boxed.annotations.Column;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -48,39 +48,40 @@ public class ResultSetParser {
      * @param rs
      * @return
      */
-    public static Object getObjFromResult(Object obj, ResultSet rs)
+    public static Object getObjFromResult(Object obj, List<Field> fields, ResultSet rs)
         throws SQLException, IllegalAccessException, IllegalArgumentException{
+        if(fields == null)
         System.out.println("\n\n");
 
         Class<?> clazz = obj.getClass();
 
-        for (Field field: clazz.getDeclaredFields()) {
-            System.out.println("DeclaredFields: "+ field.getName());
+        for (Field field: fields) {
             //Allows access to private fields
-            field.setAccessible(true);    //?
+            field.setAccessible(true);
 
             Column column = field.getAnnotation(Column.class);
-            System.out.print("\t" + column.columnName());
 
             Object value = rs.getObject(column.columnName());
             Class<?> type = field.getType();
-            System.out.print( ", " + value + ", " + type + "\n");
-
             if (isPrimitive(type)){
-                System.out.println(" is primitive adjusting ... ");
                 Class<?> boxed = boxPrimitiveClass(type);
-                value = boxed.cast(value);
-                System.out.println(" new value: " + value);
+                if (boxed.getSimpleName().equals("Double")){
+                    BigDecimal bd = (BigDecimal) value;
+                    value = bd.doubleValue();
+                }else
+                    value = boxed.cast(value);
+            }else if (value.getClass().getSimpleName().equals("Date")) {
+                Date dateObj = (Date) value;
+                value = dateObj.toString();
             }
-
             field.set(obj, value);
-            System.out.println("Final representation: " + field.get(obj) + "\n");
         }
 
         return obj;
     }
 
     public static List<String[]> getListFromResult(ResultSet rs){
+
         List<String[]> result = new ArrayList<>();
 
         String[] headers = getResultHeaders(rs);
