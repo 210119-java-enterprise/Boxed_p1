@@ -12,11 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Responsible for arsing ResultSet returned by a SQL query
  *
  * @author Gabrielle Luna
  */
 public class ResultSetParser {
-
+    /**
+     * Returns a printable summary of a SQL query, largely for debugging assistance
+     * @param rs    the desired result set
+     * @return      a printable string
+     */
     public static String getSummary(ResultSet rs){
         //Validate
         if (rs == null) return "";
@@ -43,15 +48,16 @@ public class ResultSetParser {
     }
 
     /**
-     * always returns entity related to first column in resultSet
+     * Always returns entity related to first column in resultSet
      *
-     * @param rs
-     * @return
+     * @param obj       a model of the object that will hold the result
+     * @param fields    the active fields of said obj
+     * @param rs        the desired ResultSet
+     * @return          an obj with the results inside
      */
     public static Object getObjFromResult(Object obj, List<Field> fields, ResultSet rs)
         throws SQLException, IllegalAccessException, IllegalArgumentException{
-        if(fields == null)
-        System.out.println("\n\n");
+        if(fields == null) return null;
 
         Class<?> clazz = obj.getClass();
 
@@ -80,6 +86,11 @@ public class ResultSetParser {
         return obj;
     }
 
+    /**
+     * Returns a list of String [] created from ResultSet
+     * @param rs    the desired ResultSet
+     * @return      returns a list of String [] that hold the result
+     */
     public static List<String[]> getListFromResult(ResultSet rs){
 
         List<String[]> result = new ArrayList<>();
