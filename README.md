@@ -1,5 +1,5 @@
 # Boxed_p1
-A ORM that allows for a simplified and SQL-free interaction with the relational data source
+A ORM that allows for a simplified and SQL-free interaction with the relational database
 
 # Install:
 Currently the project is not in the maven repository. To include in your own project it must be downloaded and installed to your local .m2 file where it can then be inlcuded as a dependency to future projects using :
