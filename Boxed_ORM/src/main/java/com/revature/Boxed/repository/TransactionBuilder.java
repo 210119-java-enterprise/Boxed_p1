@@ -20,6 +20,7 @@ public abstract class TransactionBuilder {
         for (int i = 0; i < statements.length; i++)
             statements[i] = new StringBuilder("");
 
+        whereBuilder = null;
         numConditions = 0;
     }
 
@@ -125,7 +126,6 @@ public abstract class TransactionBuilder {
             transaction.append(statement);
         }
 
-        whereBuilder = null;
         return transaction.toString();
     }
 }

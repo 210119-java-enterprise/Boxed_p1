@@ -1,5 +1,7 @@
 package com.revature.Boxed.repository;
 
+import jdk.nashorn.internal.objects.annotations.Where;
+
 /**
  * Handles the creation of all SELECT Transactions
  * format: SELECT fields, ... FROM entity, SELECT field FROM entity WHERE condition,
@@ -52,6 +54,7 @@ public class QueryBuilder extends TransactionBuilder{
     public void saveQuery(int i){
         if (i < 0 || i > 2)
             throw new IllegalArgumentException("SpeedDialQuery: Value must be between 0 and 2 inclusive");
+
         speedDial[i] = getTransaction();
     }
 
@@ -175,9 +178,8 @@ public class QueryBuilder extends TransactionBuilder{
      */
     @Override
     public boolean isValidTransaction(){
-        if (numConditions > 0) {
-            statements[StmtType.WHERE.ordinal()].append(whereBuilder.getTransaction());
-            whereBuilder = null;
+        if (numConditions > 0 ) {
+            statements[StmtType.WHERE.ordinal()] = new StringBuilder(whereBuilder.getTransaction());
         }
 
         return !statements[StmtType.SELECT.ordinal()].toString().equals("")

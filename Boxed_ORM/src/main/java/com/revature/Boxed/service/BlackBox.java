@@ -104,7 +104,6 @@ public class BlackBox {
      * @return                  List of objects holding return values
      */
     public <T> List<T> getObjsMatchingId(String searchFieldName, String value, boolean isString, T obj){
-        System.out.println("In getObjsMatchingId: ");
         repo.buildQueryToReturnObjectById(obj, searchFieldName, value, isString);
         repo.executeQuery(currentConnection);
         return repo.getResultInObjList(obj);
@@ -146,6 +145,16 @@ public class BlackBox {
 
         int result = repo.executeUpdate(currentConnection);
         return result > 0;
+    }
+
+    //Delete --------------------------------------------------------
+    public <T> void deleteEntry(T obj, String fieldName, String fieldValue, boolean isString){
+        try{
+            repo.buildDeleteForObjWithId(obj, fieldName, fieldValue, isString);
+        }catch (IllegalAccessException e){
+            e.printStackTrace();
+        }
+        repo.executeDelete(currentConnection);
     }
 
     //Transactions --------------------------------------------------

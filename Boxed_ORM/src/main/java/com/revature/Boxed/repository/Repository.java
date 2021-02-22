@@ -45,6 +45,7 @@ public class Repository {
                 queryBuilder.addCondition_Operator(creds[1], "=", "?", false);
                 queryBuilder.addCondition_Operator(creds[2], "=", "?", false);
                 queryBuilder.saveQuery(0);
+                System.out.println("\u001B[33m" + queryBuilder.getTransaction() + "\u001B[0m");
             }
         }
         this.config = config;
@@ -180,7 +181,7 @@ public class Repository {
      * @param <T>       obj type
      * @throws IllegalAccessException   thrown if field is inaccessible
      */
-    public <T> void buildDeleteForObj(T obj) throws IllegalAccessException{
+    public <T> void buildDeleteForObjWithId(T obj, String fieldName, String fieldValue, boolean isString) throws IllegalAccessException{
         //start delete statement
         deleteBuilder.newTransaction();
         deleteBuilder.ofEntityType(obj.getClass().getAnnotation(Entity.class).tableName());
@@ -191,9 +192,10 @@ public class Repository {
         for (Field field : activeFields){
             field.setAccessible(true);
             //If a primary key is found, use it to create a where statement
-            if(field.getAnnotation(Column.class).type().compareTo(ColumnType.PK) == 0){
+            if (field.getName().equals(fieldName)){
                 deleteBuilder.addCondition_Operator(field.getAnnotation(Column.class).columnName(),
-                        "=", Integer.toString(field.getInt(obj)), false);
+                        "=", fieldValue, isString);
+                break;
             }
         }
     }
@@ -218,7 +220,7 @@ public class Repository {
             pStmt.setString(2, password);
 
             result = pStmt.executeQuery();
-            System.out.println(pStmt);
+            System.out.println("\u001B[33m" + pStmt + "\u001B[0m");
 
         }catch (SQLException e){
             System.out.println("Following SQL query failed: " + pStmt);
@@ -228,10 +230,11 @@ public class Repository {
 
     public void executeQuery(Connection connection){
         String sql = queryBuilder.getTransaction();
-        System.out.println(sql);
         try {
             PreparedStatement pStmt = connection.prepareStatement(sql);
             result =  pStmt.executeQuery();
+            System.out.println("\u001B[33m" + pStmt + "\u001B[0m");
+
         }catch(SQLException e){
             System.out.println("Following SQL query failed: " + sql);
             e.printStackTrace();
@@ -256,6 +259,7 @@ public class Repository {
     private int Update(Connection connection, String sql){
         try{
             PreparedStatement pStmt = connection.prepareStatement(sql);
+            System.out.println("\u001B[33m" + pStmt + "\u001B[0m");
             return pStmt.executeUpdate();
         }catch (SQLException e){
             System.out.println("Following SQL query failed: " + sql);
