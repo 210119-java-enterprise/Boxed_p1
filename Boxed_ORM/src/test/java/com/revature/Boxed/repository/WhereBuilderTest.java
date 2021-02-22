@@ -1,55 +1,64 @@
 package com.revature.Boxed.repository;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class WhereBuilderTest {
-    WhereBuilder whereBuilder = new WhereBuilder();
+    WhereBuilder sut;
+    //WhereBuilder sut = new WhereBuilder();
+
+    @Before
+    public void setUpTest() { sut = new WhereBuilder();}
+
+    @After
+    public void tearDownTest(){ sut = null; }
 
     @Test
-    public void testWhere_Like(){
+    public void test_Where_Like(){
         //Arrange
-        whereBuilder.newTransaction();
+        sut.newTransaction();
         //Act
-        whereBuilder.addCondition_Like("firstName", "%s");
+        sut.addCondition_Like("firstName", "%s");
         //Assert
         assertEquals("WHERE firstName LIKE '%s' ",
-                whereBuilder.getTransaction());
+                sut.getTransaction());
 
     }
 
     @Test
-    public void testWhere_InList(){
+    public void test_Where_InList(){
         //Arrange
-        whereBuilder.newTransaction();
+        sut.newTransaction();
         //Act
         String[] list = {"Carl", "Chris", "Carrie"};
-        whereBuilder.addCondition_In("firstName", list);
+        sut.addCondition_In("firstName", list);
         //Assert
         assertEquals("WHERE firstName IN ('Carl', 'Chris', 'Carrie') ",
-                whereBuilder.getTransaction());
+                sut.getTransaction());
 
     }
 
     @Test
-    public void testWhere_InSubQuery(){
+    public void test_Where_InSubQuery(){
         //Arrange
-        whereBuilder.newTransaction();
+        sut.newTransaction();
         //Act
-        whereBuilder.addCondition_In("firstName", "subQuery");
+        sut.addCondition_In("firstName", "subQuery");
         //Assert
         assertEquals("WHERE firstName IN (subQuery) ",
-                whereBuilder.getTransaction());
+                sut.getTransaction());
 
     }
 
     @Test
-    public void testWhere_WithoutList(){
+    public void test_Where_WithoutList(){
         //Arrange
-        whereBuilder.newTransaction();
+        sut.newTransaction();
         //Act
         //Assert
-        assertEquals("", whereBuilder.getTransaction());
+        assertEquals("", sut.getTransaction());
     }
 }

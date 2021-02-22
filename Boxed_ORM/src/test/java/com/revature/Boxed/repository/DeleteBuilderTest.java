@@ -7,7 +7,7 @@ public class DeleteBuilderTest {
     DeleteBuilder deleteBuilder = new DeleteBuilder();
 
     @Test
-    public void testDelete(){
+    public void TestDelete(){
         //Arrange
         deleteBuilder.newTransaction();
         //Act
@@ -18,7 +18,7 @@ public class DeleteBuilderTest {
     }
 
     @Test
-    public void testDeleteWith_Condition(){
+    public void TestDeleteWith_Condition(){
         //Arrange
         deleteBuilder.newTransaction();
         //Act
@@ -30,7 +30,7 @@ public class DeleteBuilderTest {
     }
 
     @Test
-    public void testDeleteInValid_WithoutWhere(){
+    public void TestDeleteInValid_WithoutWhere(){
         //Arrange
         deleteBuilder.newTransaction();
         //Act

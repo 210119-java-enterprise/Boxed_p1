@@ -1,5 +1,11 @@
 package com.revature.Boxed.repository;
 
+/**
+ * Has basic validation for all SQL transactions and acts as intermediary for
+ * WHERE statements. Parent class to all Builder classes
+ *
+ * @author Gabrielle Luna
+ */
 public abstract class TransactionBuilder {
     StringBuilder transaction;
     StringBuilder[] statements;
@@ -7,15 +13,23 @@ public abstract class TransactionBuilder {
     int numConditions;
     WhereBuilder whereBuilder;
 
+    /**
+     * resets the statements array that holds the incomplete Transaction
+     */
     void newTransaction(){
-        for (int i = 0; i < statements.length; i++) {
+        for (int i = 0; i < statements.length; i++)
             statements[i] = new StringBuilder("");
-        }
 
         numConditions = 0;
     }
 
     //Class Type ----------------------------------------------------
+    /**
+     * Sets the first statement which typically has the same structure for all Transactions
+     * format: TRANSACTION_TYPE entityName
+     * @param entityName    the name of the table at the center of the query
+     * @param start         the start to the chosen transaction ex: "INSERT INTO"
+     */
     void setType(String entityName, String start){
         //Validate
         isValidName(entityName);
@@ -26,6 +40,9 @@ public abstract class TransactionBuilder {
     }
 
     //Where ---------------------------------------------------------
+    /**
+     * reset the where builder and avoids storing one when not in use
+     */
     private void prepWhere(){
         //Allow for condition chaining
         numConditions++;
@@ -64,6 +81,11 @@ public abstract class TransactionBuilder {
     //VALIDATE ------------------------------------------------------
     public abstract boolean isValidTransaction ();
 
+    /**
+     * Reject any strings that are not SQL friendly
+     * @param args  list of String to check
+     * @throws IllegalArgumentException if a string is deemed invalid
+     */
     public void isValidName(String... args)throws IllegalArgumentException {
         for (String i: args) {
             if(i == null || i.trim().equals(""))
@@ -74,6 +96,10 @@ public abstract class TransactionBuilder {
         }
     }
 
+    /**
+     * Reject any logic operators that are not SQL friendly
+     * @param args  list of strings to check
+     */
     public void isValidConditionOperator(String... args) {
         for (String i: args) {
             if(i == null || i.trim().equals(""))
@@ -85,6 +111,11 @@ public abstract class TransactionBuilder {
     }
 
     //Finalize
+    /**
+     * Final SQL string can be built by appending strings in the same order as they
+     * are presented in the statements array
+     * @return  SQL string
+     */
     public String getTransaction(){
         transaction = new StringBuilder("");
 

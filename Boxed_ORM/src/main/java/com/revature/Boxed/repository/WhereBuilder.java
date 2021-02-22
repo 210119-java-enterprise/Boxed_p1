@@ -1,8 +1,16 @@
 package com.revature.Boxed.repository;
 
-
+/**
+ * Handles the cretion of all WHERE Transactions
+ * format: WHERE condition, ...
+ *
+ * @author Gabrielle Luna
+ */
 public class WhereBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
+    /**
+     * Represents basic structure of WHERE statement
+     */
     private enum StmtType {
         WHERE, LIST_CONDITIONS;
 
@@ -24,6 +32,14 @@ public class WhereBuilder extends TransactionBuilder{
     public WhereBuilder switchToAnd() {chainWithAnd = true; return this;}
 
     //Conditions ----------------------------------------------------
+    /**
+     * Adds a condition dependent upon a logic Operator
+     * format: this > that
+     * @param thisField             the left side of the operator
+     * @param conditionOperator     the logic operator used
+     * @param thatField             the right side of the operator
+     * @param isString              boolean stating whether thatField should be wrapped in ' '
+     */
     public void addCondition_Operator(String thisField, String conditionOperator,
                                      String thatField, boolean isString){
         //Validation
@@ -56,6 +72,13 @@ public class WhereBuilder extends TransactionBuilder{
 
     }
 
+    /**
+     * Adds a condition that uses the BETWEEN operator
+     * format: thisField BETWEEN lowerBound AND upperBound
+     * @param thisField         the left side of the operator
+     * @param lowerBound        the lower end of accepted range
+     * @param upperBound        the upper end of accepted range
+     */
     public void addCondition_Between(String thisField, String lowerBound, String upperBound){
         //Validation
         isValidName(thisField);
@@ -75,6 +98,12 @@ public class WhereBuilder extends TransactionBuilder{
                 .append(upperBound).append(" ");
     }
 
+    /**
+     * Adds a condition that uses the LIKE operator
+     * format: thisField LIKE '%s'
+     * @param thisField         the left side fo the operator
+     * @param stringComparison  the string being compared to the left
+     */
     public void addCondition_Like(String thisField, String stringComparison){
         //Validation
         isValidName(thisField);
@@ -92,6 +121,12 @@ public class WhereBuilder extends TransactionBuilder{
                 .append("'").append(stringComparison).append("' ");
     }
 
+    /**
+     * Adds a condition that uses the IN operator
+     * format: thisField IN (value, ...)
+     * @param thisField     the left side of the operator
+     * @param listValues    a list of possible matches for 'thisField'
+     */
     public void addCondition_In(String thisField, String[] listValues){
         //Validation
         if (listValues == null || listValues.length == 0)
@@ -125,6 +160,12 @@ public class WhereBuilder extends TransactionBuilder{
                 .append(") ");
     }
 
+    /**
+     * Adds a condition that uses the IN operator
+     * format: thisField IN (subQuery)
+     * @param thisField     the left side of the operator
+     * @param subQuery      the subquery from which a match will be looked for
+     */
     public void addCondition_In(String thisField, String subQuery){
         //Validation
         isValidName(thisField, subQuery);
@@ -142,6 +183,10 @@ public class WhereBuilder extends TransactionBuilder{
                 .append("(").append(subQuery).append(") ");
     }
 
+    /**
+     * Ensures each transaction has a LIST_CONDITIONS statement
+     * @return boolean stating whether minimum features are present
+     */
     @Override
     public boolean isValidTransaction(){
         return !statements[StmtType.WHERE.ordinal()].toString().equals("")

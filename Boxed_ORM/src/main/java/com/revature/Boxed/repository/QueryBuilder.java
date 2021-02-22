@@ -1,10 +1,15 @@
 package com.revature.Boxed.repository;
 
 /**
- *
+ * Handles the creation of all SELECT Transactions
+ * format: SELECT fields, ... FROM entity, SELECT field FROM entity WHERE condition,
+ * SELECT field FROM entity OUTER JOIN entity
  */
 public class QueryBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
+    /**
+     * Represents basic structure of SELECT statement
+     */
     private enum StmtType {
         SELECT, FROM, JOIN, WHERE;
 
@@ -12,6 +17,9 @@ public class QueryBuilder extends TransactionBuilder{
         public String toString() { return name() + " ";}
     }
 
+    /**
+     * Represents the available variety of JOINs
+     */
     public enum JoinType {
         INNER, OUTER, FULL, LEFT, RIGHT;
 
@@ -21,6 +29,7 @@ public class QueryBuilder extends TransactionBuilder{
         }
     }
 
+
     //statement stats
     private int numTables = 0;
 
@@ -29,7 +38,6 @@ public class QueryBuilder extends TransactionBuilder{
 
 
     //TODO: add aggregate functions
-    //TODO: add chained conditions to WHERE clause (or, and)
 
     //Constructors --------------------------------------------------
     public QueryBuilder() {
@@ -57,7 +65,6 @@ public class QueryBuilder extends TransactionBuilder{
     /**
      * Allows the user to add a basic SELECT statement that returns all columns in query
      * format: SELECT *
-     * @return this QueryBuilder object
      */
     public void returnFields(){
         statements[StmtType.SELECT.ordinal()]
@@ -68,7 +75,6 @@ public class QueryBuilder extends TransactionBuilder{
      * Allows user to specify which columns to get a return value from
      * format SELECT col1, col2, ...
      * @param ColumnNames list of columns to select
-     * @return this QueryBuilder object
      */
     public void returnFields(String ... ColumnNames){
         //Validation
@@ -98,7 +104,6 @@ public class QueryBuilder extends TransactionBuilder{
      * mandatory to create a valid query
      * format: FROM table T1
      * @param entityName name of the table being queried
-     * @return this QueryBuilder object
      */
     public void ofEntityType(String entityName){
         statements[StmtType.FROM.ordinal()]
@@ -114,7 +119,6 @@ public class QueryBuilder extends TransactionBuilder{
      * format: JOIN table T2
      * @param entityName The name of the table being added to the Query
      * @param joinType the JOIN type
-     * @return this QueryBuilder object
      */
     public void joinWith(String entityName, JoinType joinType){
         //validation
@@ -140,7 +144,6 @@ public class QueryBuilder extends TransactionBuilder{
      * @param joinType the JOIN type
      * @param mainClassField the column from the entity added in the FROM statement that will be used for the comparison
      * @param joinClassField the column from this entity that will be used for the comparison
-     * @return this QueryBuilder object
      */
     public void joinOn(String entityName, JoinType joinType, String mainClassField, String joinClassField){
         //Validation
@@ -164,12 +167,10 @@ public class QueryBuilder extends TransactionBuilder{
 
     }
 
-    //WHERE ---------------------------------------------------------
-    //SEE SUPER
-
     //VALIDATE ------------------------------------------------------
     /**
-     * Ensures a query cannot be returned without a built Select and From statement
+     * Ensures a query cannot be returned without a built Select and From statement and
+     * adds the where statement if one is needed
      * @return a boolean stating whether statement has a select and from statement
      */
     @Override

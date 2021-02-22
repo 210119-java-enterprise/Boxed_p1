@@ -2,10 +2,16 @@ package com.revature.Boxed.repository;
 
 
 /**
+ * Handles the creation of all INSERT transactions
+ * format: INSERT INTO entity_name (columns_used, ...) VALUES (value, ...)
  *
+ * @author Gabrielle Luna
  */
 public class InsertBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
+    /**
+     * Represents basic structure of INSERT statement
+     */
     private enum StmtType {
         INSERT{
             @Override
@@ -32,14 +38,17 @@ public class InsertBuilder extends TransactionBuilder{
     }
 
     //INSERT --------------------------------------------------------
-    /**
-     *
-     * @param entityName
-     */
     public void ofEntityType(String entityName){
         super.setType(entityName, StmtType.INSERT.toString());
     }
 
+    /**
+     * Takes a key value pair and inserts the key into the COLUMNS list and the
+     * value into the VALUES list. This prevents mismatch caused by user error.
+     * @param key           the name of the column being inserted into
+     * @param value         the value being inserted
+     * @param isString      boolean telling whether to wrap value in ' '
+     */
     public void insertKeyValuePair(String key, String value, boolean isString) {
         numKVPairs ++;
         colListed = true;
@@ -76,6 +85,10 @@ public class InsertBuilder extends TransactionBuilder{
 
     //TODO : insert via list to allow for multi value sets
 
+    /**
+     * Ensures each transaction has a INSERT value set and a non empty VALUES list
+     * @return boolean stataing whether minimum features are present
+     */
     @Override
     public boolean isValidTransaction() {
         if(colListed)
