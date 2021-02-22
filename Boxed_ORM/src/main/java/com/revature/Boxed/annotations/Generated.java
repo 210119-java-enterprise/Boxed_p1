@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * marks values that will have a default value set by the database
- * if one is not provided
+ * Marks values that will have a default value set by the database
+ * these fields are left empty on Insert transactions.
  *
  * @author Gabrielle Luna
  */

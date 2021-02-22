@@ -9,8 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *This class will hold basic information about the users classes which are
- * included via a .properties file.
+ *
  *
  * @param <T> the type of class being modeled
  *
