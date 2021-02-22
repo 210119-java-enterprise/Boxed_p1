@@ -2,24 +2,22 @@ package com.revature.Boxed.model;
 
 import com.revature.Boxed.annotations.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
- *
+ * Class holds the basic information needed from an annotated class created by user.
+ * Intended for internal use.
  * @param <T> the type of class being modeled
  *
  * @author Gabrielle Luna
- * @author Wezley Singleton
  */
 public class Metamodel <T>{
     //Attributes -------------------------------------------------
     private final Class<T> clazz;
-    private final List<ColumnField> columnFields;
+    private final List<Field> activeFields;
+    private final String entityName;
 
     //Static --------------------------------------------------------
     public static <T> Metamodel <T> of (Class<T> clazz){
@@ -30,9 +28,16 @@ public class Metamodel <T>{
         return new Metamodel<>(clazz);
     }
     //Constructors -------------------------------------------------
+    /**
+     * Follows a static block of code that confirms the class in question has the Entity
+     * Annotation. It will keep a copy of the Class, set a list of active annotated fields
+     * and keep a copy of the Classes corresponding Entity name.
+     * @param clazz the class being modeled.
+     */
     public Metamodel(Class<T> clazz){
         this.clazz = clazz;
-        this.columnFields = new LinkedList<>();
+        this.activeFields = setActiveFields();
+        this.entityName = clazz.getAnnotation(Entity.class).tableName();
     }
 
     //Getters and Setters -------------------------------------------
@@ -40,25 +45,21 @@ public class Metamodel <T>{
 
     public String getClassName(){ return clazz.getSimpleName(); }
 
-    public String getEntityName() { return clazz.getAnnotation(Entity.class).tableName();}
+    public String getEntityName() { return entityName;}
 
-    public Field getPrimaryKey(){
-        return null;
-    }
-
-    public Field getForeignKeys() {
-        return null;
-    }
-
-    public List<Field> getActiveFields() {
+    /**
+     * Adds any field marked with the Column Annotation to a list of active
+     * or watched fields.
+     * @return  a List of active fields.
+     */
+    public List<Field> setActiveFields() {
         Field[] fields = clazz.getDeclaredFields();
         List<Field> activeFields = new ArrayList<>();
 
         for (Field field : fields) {
             Column column = field.getAnnotation(Column.class);
-            if (column != null){
+            if (column != null)
                 activeFields.add(field);
-            }
         }
 
         if (activeFields.isEmpty())
@@ -67,23 +68,33 @@ public class Metamodel <T>{
         return activeFields;
     }
 
-
-    public String getCredentialFields(){
-        String response = "";
-        if (isLogOnCredentials()){
-            for (Field field:getActiveFields()) {
-                if (field.getAnnotation(Credential.class) != null)
-                    response += ":" + field.getAnnotation(Column.class).columnName();
-            }
-        }
-        System.out.println("Meta response: " + response);
-            return response;
+    public List<Field> getActiveFields() {
+        return activeFields;
     }
 
-    //Other ---------------------------------------------------------
+    //Credentials ---------------------------------------------------
+
+    /**
+     * Only one class is anticipated to be marked as a CredentialClass
+     * if this one is it will return true
+     * @return boolean, true for a CredentialClass, false otherwise
+     */
     public boolean isLogOnCredentials(){
         return clazz.getAnnotation(CredentialsClass.class) != null;
     }
 
-
+    /**
+     * Returns a string, colon separated, with the username and password column names
+     * @return String with credentials
+     */
+    public String getCredentialFields(){
+        StringBuilder response = new StringBuilder();
+        if (isLogOnCredentials()){
+            for (Field field:getActiveFields()) {
+                if (field.getAnnotation(Credential.class) != null)
+                    response.append(":").append(field.getAnnotation(Column.class).columnName());
+            }
+        }
+        return response.toString();
+    }
 }
