@@ -91,7 +91,7 @@ public class BlackBox {
     //Update --------------------------------------------------------
     public <T> boolean updateField(T obj, String updateFieldName, String updatedValue, boolean isString){
         try{
-            repo.buildUpdateForObjFields(obj, updateFieldName, updatedValue, isString);
+            repo.buildUpdateForObjField(obj, updateFieldName, updatedValue, isString);
         }catch(IllegalAccessException e){
             e.printStackTrace();
         }

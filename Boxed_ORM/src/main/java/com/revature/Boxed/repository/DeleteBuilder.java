@@ -16,7 +16,7 @@ public class DeleteBuilder extends TransactionBuilder{
             @Override
             public String toString(){ return name() + " FROM "; }
         },
-        WHERE;
+        WHERE
 
     }
 
