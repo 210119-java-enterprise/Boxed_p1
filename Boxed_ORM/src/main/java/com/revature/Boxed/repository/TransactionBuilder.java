@@ -26,65 +26,43 @@ public abstract class TransactionBuilder {
     }
 
     //Where ---------------------------------------------------------
-    public void addCondition_Operator(String thisField, String conditionOperator,
-                           String thatField, boolean isString){
+    private void prepWhere(){
         //Allow for condition chaining
         numConditions++;
         if(numConditions == 1){
             whereBuilder = new WhereBuilder();
             whereBuilder.newTransaction();
         }
-
+    }
+    public void addCondition_Operator(String thisField, String conditionOperator,
+                           String thatField, boolean isString){
+        prepWhere();
         whereBuilder.addCondition_Operator(thisField, conditionOperator, thatField, isString);
     }
 
     void addCondition_Between(String thisField, String lowerBound, String upperBound) {
-        //Allow for condition chaining
-        numConditions++;
-        if(numConditions == 1){
-            whereBuilder = new WhereBuilder();
-            whereBuilder.newTransaction();
-        }
-
+        prepWhere();
         whereBuilder.addCondition_Between(thisField, lowerBound, upperBound);
     }
 
     void addCondition_Like(String thisField, String stringComparison){
-        //Allow for condition chaining
-        numConditions++;
-        if(numConditions == 1){
-            whereBuilder = new WhereBuilder();
-            whereBuilder.newTransaction();
-        }
-
+        prepWhere();
         whereBuilder.addCondition_Like(thisField, stringComparison);
     }
 
     void addCondition_In(String thisField, String[] listValues){
-        //Allow for condition chaining
-        numConditions++;
-        if(numConditions == 1){
-            whereBuilder = new WhereBuilder();
-            whereBuilder.newTransaction();
-        }
-
+        prepWhere();
         whereBuilder.addCondition_In(thisField, listValues);
     }
 
     void addCondition_In(String thisField, String subQuery){
-        //Allow for condition chaining
-        numConditions++;
-        if(numConditions == 1){
-            whereBuilder = new WhereBuilder();
-            whereBuilder.newTransaction();
-        }
-
+        prepWhere();
         whereBuilder.addCondition_In(thisField, subQuery);
     }
 
 
-        //VALIDATE ------------------------------------------------------
-        public abstract boolean isValidTransaction ();
+    //VALIDATE ------------------------------------------------------
+    public abstract boolean isValidTransaction ();
 
     public void isValidName(String... args)throws IllegalArgumentException {
         for (String i: args) {
