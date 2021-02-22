@@ -9,9 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ *This class will hold basic information about the users classes which are
+ * included via a .properties file.
  *
- * @param <T>
+ * @param <T> the type of class being modeled
  *
+ * @author Gabrielle Luna
  * @author Wezley Singleton
  */
 public class Metamodel <T>{
@@ -35,8 +38,6 @@ public class Metamodel <T>{
 
     //Getters and Setters -------------------------------------------
     public Class<T> getClazz() { return clazz; }
-
-    public Constructor<?>[] getConstructors(){ return clazz.getConstructors();}
 
     public String getClassName(){ return clazz.getSimpleName(); }
 
