@@ -74,6 +74,8 @@ public class InsertBuilder extends TransactionBuilder{
             statements[StmtType.VALUES.ordinal()].append("'");
     }
 
+    //TODO : insert via list to allow for multi value sets
+
     @Override
     public boolean isValidTransaction() {
         if(colListed)

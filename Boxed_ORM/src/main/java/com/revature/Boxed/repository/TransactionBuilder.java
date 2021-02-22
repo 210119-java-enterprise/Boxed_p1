@@ -31,7 +31,8 @@ public abstract class TransactionBuilder {
         //Allow for condition chaining
         numConditions++;
         if(numConditions == 1){
-            whereBuilder = new WhereBuilder().craftNewTransaction();
+            whereBuilder = new WhereBuilder();
+            whereBuilder.newTransaction();
         }
 
         whereBuilder.addCondition_Operator(thisField, conditionOperator, thatField, isString);
@@ -41,7 +42,8 @@ public abstract class TransactionBuilder {
         //Allow for condition chaining
         numConditions++;
         if(numConditions == 1){
-            whereBuilder = new WhereBuilder().craftNewTransaction();
+            whereBuilder = new WhereBuilder();
+            whereBuilder.newTransaction();
         }
 
         whereBuilder.addCondition_Between(thisField, lowerBound, upperBound);
@@ -51,7 +53,8 @@ public abstract class TransactionBuilder {
         //Allow for condition chaining
         numConditions++;
         if(numConditions == 1){
-            whereBuilder = new WhereBuilder().craftNewTransaction();
+            whereBuilder = new WhereBuilder();
+            whereBuilder.newTransaction();
         }
 
         whereBuilder.addCondition_Like(thisField, stringComparison);
@@ -61,7 +64,8 @@ public abstract class TransactionBuilder {
         //Allow for condition chaining
         numConditions++;
         if(numConditions == 1){
-            whereBuilder = new WhereBuilder().craftNewTransaction();
+            whereBuilder = new WhereBuilder();
+            whereBuilder.newTransaction();
         }
 
         whereBuilder.addCondition_In(thisField, listValues);
@@ -71,7 +75,8 @@ public abstract class TransactionBuilder {
         //Allow for condition chaining
         numConditions++;
         if(numConditions == 1){
-            whereBuilder = new WhereBuilder().craftNewTransaction();
+            whereBuilder = new WhereBuilder();
+            whereBuilder.newTransaction();
         }
 
         whereBuilder.addCondition_In(thisField, subQuery);
@@ -104,13 +109,14 @@ public abstract class TransactionBuilder {
     //Finalize
     public String getTransaction(){
         transaction = new StringBuilder("");
-        whereBuilder = null;
 
         if(!isValidTransaction())
             return "";
         for (StringBuilder statement : statements) {
             transaction.append(statement);
         }
+
+        whereBuilder = null;
         return transaction.toString();
     }
 }

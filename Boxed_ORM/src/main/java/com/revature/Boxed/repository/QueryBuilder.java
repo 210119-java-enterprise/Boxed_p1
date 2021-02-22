@@ -102,8 +102,9 @@ public class QueryBuilder extends TransactionBuilder{
      */
     public void ofEntityType(String entityName){
         statements[StmtType.FROM.ordinal()]
-                .append(StmtType.FROM.ordinal())
-                .append(entityName).append(" ");
+                .append(StmtType.FROM.toString())
+                .append(entityName).append(" ")
+                .append("T1 ");
         numTables++;
     }
 

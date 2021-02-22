@@ -97,7 +97,7 @@ public class Repository {
         for (Field field : activeFields){
             field.setAccessible(true);
             if(field.getAnnotation(Column.class).type().compareTo(ColumnType.PK) == 0){
-                updateBuilder.updateConditions(field.getAnnotation(Column.class).columnName(),
+                updateBuilder.addCondition_Operator(field.getAnnotation(Column.class).columnName(),
                                 "=", Integer.toString(field.getInt(obj)), false);
             }
         }

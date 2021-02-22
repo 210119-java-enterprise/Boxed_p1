@@ -14,10 +14,9 @@ public class WhereBuilder extends TransactionBuilder{
     //Constructors --------------------------------------------------
     public WhereBuilder () {statements = new StringBuilder[StmtType.values().length];}
 
-    public WhereBuilder craftNewTransaction(){
+    public void newTransaction(){
         super.newTransaction();
         statements[StmtType.WHERE.ordinal()].append(StmtType.WHERE.toString());
-        return this;
     }
 
     //Chain Operator ------------------------------------------------

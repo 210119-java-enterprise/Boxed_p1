@@ -11,7 +11,10 @@ public class DeleteBuilder extends TransactionBuilder{
 
     }
 
-    private int numConditions;
+    //Constructors  -------------------------------------------------
+    public DeleteBuilder() {
+        statements = new StringBuilder[StmtType.values().length];
+    }
 
     //DELETE --------------------------------------------------------
     public void ofEntityType(String entityName){
@@ -25,7 +28,7 @@ public class DeleteBuilder extends TransactionBuilder{
             statements[StmtType.WHERE.ordinal()].append(whereBuilder.getTransaction());
             whereBuilder = null;
         }
-        return !statements[StmtType.DELETE.ordinal()].toString().equals("")
-                && !statements[StmtType.WHERE.ordinal()].toString().equals("");
+
+        return !statements[StmtType.DELETE.ordinal()].toString().equals("");
     }
 }
