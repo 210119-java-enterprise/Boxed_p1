@@ -1,6 +1,6 @@
 package com.revature.utilities.queries;
 
-import com.revature.Boxed.utilities.queries.ResultSetParser;
+import com.revature.Boxed.repository.ResultSetParser;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

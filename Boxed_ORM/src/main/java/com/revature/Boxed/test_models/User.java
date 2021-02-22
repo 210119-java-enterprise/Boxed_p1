@@ -1,9 +1,8 @@
 package com.revature.Boxed.test_models;
 
 import com.revature.Boxed.annotations.*;
-import com.revature.annotations.*;
 
-import static com.revature.Boxed.model.model.ColumnType.*;
+import static com.revature.Boxed.model.ColumnType.*;
 
 /**
  * Demo class for testing purposes, shouldn't be in final package

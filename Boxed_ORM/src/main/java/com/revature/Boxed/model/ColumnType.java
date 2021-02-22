@@ -1,4 +1,4 @@
-package com.revature.Boxed.model.model;
+package com.revature.Boxed.model;
 
 public enum ColumnType {
     PK, FK, DEFAULT

@@ -1,4 +1,4 @@
-package com.revature.Boxed.utilities.queries;
+package com.revature.Boxed.repository;
 
 public abstract class TransactionBuilder implements SQLTransaction {
     StringBuilder transaction;

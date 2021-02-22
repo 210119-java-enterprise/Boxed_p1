@@ -1,7 +1,6 @@
-package com.revature.Boxed.model.model;
+package com.revature.Boxed.model;
 
 import com.revature.Boxed.annotations.*;
-import com.revature.annotations.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,9 +17,7 @@ import java.util.List;
 public class Metamodel <T>{
     //Attributes -------------------------------------------------
     private final Class<T> clazz;
-    private PrimaryKeyField primaryKeyField;
     private final List<ColumnField> columnFields;
-    private List<ForeignKeyField> foreignKeyFields;
 
     //Static --------------------------------------------------------
     public static <T> Metamodel <T> of (Class<T> clazz){
@@ -34,7 +31,6 @@ public class Metamodel <T>{
     public Metamodel(Class<T> clazz){
         this.clazz = clazz;
         this.columnFields = new LinkedList<>();
-        this.foreignKeyFields = new LinkedList<>();
     }
 
     //Getters and Setters -------------------------------------------
@@ -46,15 +42,12 @@ public class Metamodel <T>{
 
     public String getEntityName() { return clazz.getAnnotation(Entity.class).tableName();}
 
-    public PrimaryKeyField getPrimaryKey(){
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            Column_PK primaryKey = field.getAnnotation(Column_PK.class);
-            if (primaryKey != null)
-                return new PrimaryKeyField(field);
-        }
-        throw new RuntimeException("Did not find a field annotated with @Column_PK in: "
-                + clazz.getName());
+    public Field getPrimaryKey(){
+        return null;
+    }
+
+    public Field getForeignKeys() {
+        return null;
     }
 
     public List<Field> getActiveFields() {
@@ -74,17 +67,6 @@ public class Metamodel <T>{
         return activeFields;
     }
 
-    public List<ForeignKeyField> getForeignKeys() {
-        List<ForeignKeyField> foreignKeyFields = new ArrayList<>();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for (Field field : fields) {
-            Column_FK column = field.getAnnotation(Column_FK.class);
-            if (column != null)
-                foreignKeyFields.add(new ForeignKeyField(field));
-        }
-        return foreignKeyFields;
-    }
 
     public String getCredentialFields(){
         String response = "";

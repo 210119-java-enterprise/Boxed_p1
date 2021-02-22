@@ -1,8 +1,8 @@
 package com.revature.Boxed.service;
 
 import com.revature.Boxed.utilities.Configuration;
-import com.revature.Boxed.utilities.connection.ConnectionPool;
-import com.revature.Boxed.utilities.connection.R4ConnectionPool;
+import com.revature.Boxed.utilities.ConnectionPool;
+import com.revature.Boxed.utilities.R4ConnectionPool;
 import com.revature.Boxed.repository.Repository;
 
 import java.net.ConnectException;
@@ -85,6 +85,18 @@ public class BlackBox {
             e.printStackTrace();
         }
         int result = repo.executeInsert(currentConnection);
+        return result > 0;
+    }
+
+    //Update --------------------------------------------------------
+    public <T> boolean updateField(T obj, String updateFieldName, String updatedValue, boolean isString){
+        try{
+            repo.buildUpdateForObjFields(obj, updateFieldName, updatedValue, isString);
+        }catch(IllegalAccessException e){
+            e.printStackTrace();
+        }
+
+        int result = repo.executeUpdate(currentConnection);
         return result > 0;
     }
 

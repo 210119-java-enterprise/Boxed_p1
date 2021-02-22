@@ -1,4 +1,4 @@
-package com.revature.Boxed.utilities.queries;
+package com.revature.Boxed.repository;
 
 
 /**
@@ -53,8 +53,7 @@ public class InsertBuilder extends TransactionBuilder{
         numKVPairs ++;
         colListed = true;
 
-        System.out.println(key + " = " + value);
-        //Does not work with multiple entries
+       //Does not work with multiple entries
         if (numEntries == 1)
             return this;
 

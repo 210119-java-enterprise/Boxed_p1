@@ -1,9 +1,10 @@
-package com.revature.Boxed.utilities.queries;
+package com.revature.Boxed.repository;
 
 import com.revature.Boxed.annotations.Column;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -62,20 +63,17 @@ public class ResultSetParser {
 
             Object value = rs.getObject(column.columnName());
             Class<?> type = field.getType();
-
             if (isPrimitive(type)){
-                System.out.println(" current type : " + type.getName());
                 Class<?> boxed = boxPrimitiveClass(type);
-                System.out.println(" current box type : " + boxed.getSimpleName());
-                System.out.println(" current value type : " + value.getClass());
                 if (boxed.getSimpleName().equals("Double")){
-                    System.out.println("In catch block");
                     BigDecimal bd = (BigDecimal) value;
                     value = bd.doubleValue();
                 }else
                     value = boxed.cast(value);
+            }else if (value.getClass().getSimpleName().equals("Date")) {
+                Date dateObj = (Date) value;
+                value = dateObj.toString();
             }
-            System.out.println("value: " + value + " value type " + value.getClass());
             field.set(obj, value);
         }
 

@@ -1,6 +1,6 @@
 package com.revature.Boxed.utilities;
 
-import com.revature.Boxed.model.model.Metamodel;
+import com.revature.Boxed.model.Metamodel;
 
 import java.io.FileReader;
 import java.io.IOException;

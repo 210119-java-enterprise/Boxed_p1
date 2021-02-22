@@ -3,11 +3,9 @@ package com.revature.Boxed.repository;
 import com.revature.Boxed.annotations.Column;
 import com.revature.Boxed.annotations.Entity;
 import com.revature.Boxed.annotations.Generated;
-import com.revature.Boxed.model.model.Metamodel;
+import com.revature.Boxed.model.ColumnType;
+import com.revature.Boxed.model.Metamodel;
 import com.revature.Boxed.utilities.Configuration;
-import com.revature.Boxed.utilities.queries.InsertBuilder;
-import com.revature.Boxed.utilities.queries.QueryBuilder;
-import com.revature.Boxed.utilities.queries.ResultSetParser;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -20,6 +18,7 @@ import java.util.List;
 public class Repository {
     private final QueryBuilder queryBuilder = new QueryBuilder();
     private final InsertBuilder insertBuilder = new InsertBuilder();
+    private final UpdateBuilder updateBuilder = new UpdateBuilder();
 
     private ResultSet result;
     ResultSetParser resultSetParser;
@@ -67,7 +66,6 @@ public class Repository {
         queryBuilder.craftNewTransaction()
                 .ofClassType(obj.getClass().getAnnotation(Entity.class).tableName())
                 .returnFields();
-        System.out.println("In buildQueryToReturnObjectById : ");
         //Add search parameters
         Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
         List<Field> activeFields = meta.getActiveFields();
@@ -81,8 +79,29 @@ public class Repository {
                 break;
             }
         }
+        System.out.println("buildQueryToReturnObjById : " + queryBuilder.getQuery());
     }
 
+    //Build Update --------------------------------------------------
+    public <T> void buildUpdateForObjFields(T obj, String updateFieldName, String updatedValue, boolean isString)
+            throws IllegalAccessException {
+        //start query statement
+        updateBuilder.craftNewTransaction()
+                .updateType(obj.getClass().getAnnotation(Entity.class).tableName())
+                .updateKeyValuePair(updateFieldName, updatedValue, isString);
+
+        //Add conditions
+        Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
+        List<Field> activeFields = meta.getActiveFields();
+        for (Field field : activeFields){
+            field.setAccessible(true);
+            if(field.getAnnotation(Column.class).type().compareTo(ColumnType.PK) == 0){
+                updateBuilder.updateConditions(field.getAnnotation(Column.class).columnName(),
+                                "=", Integer.toString(field.getInt(obj)), false);
+            }
+        }
+
+    }
 
     //Build Insert --------------------------------------------------
     public <T> void buildInsertForObj(T obj) throws IllegalAccessException{
@@ -96,6 +115,8 @@ public class Repository {
             field.setAccessible(true);
             Object value = field.get(obj);
             if (value != null && field.getAnnotation(Generated.class) == null) {
+                System.out.println("key : " + field.getAnnotation(Column.class).columnName() + " value : "
+                        + value.toString());
                 insertBuilder.insertKeyValuePair(field.getAnnotation(Column.class).columnName(),
                         value.toString(), value.getClass() == String.class);
             }
@@ -148,6 +169,17 @@ public class Repository {
         return -1;
     }
 
+    public int executeUpdate(Connection connection){
+        String update = updateBuilder.getUpdateTransaction();
+        try{
+            PreparedStatement pStmt = connection.prepareStatement(update);
+            return pStmt.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     //Retrieve ------------------------------------------------------
     public <T> T getResultInObj(Class<T> model){
         if (result != null){
@@ -174,7 +206,6 @@ public class Repository {
             try{
                 while(result.next()){
                     T t = (T) obj.getClass().newInstance();
-                    System.out.println(t.toString());
                     //noinspection unchecked
                     list.add((T) ResultSetParser.getObjFromResult(t, meta.getActiveFields(), result));
                 }

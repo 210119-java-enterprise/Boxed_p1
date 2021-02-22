@@ -1,6 +1,6 @@
 package com.revature.Boxed.annotations;
 
-import com.revature.Boxed.model.model.ColumnType;
+import com.revature.Boxed.model.ColumnType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

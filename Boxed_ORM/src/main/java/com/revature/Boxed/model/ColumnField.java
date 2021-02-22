@@ -1,4 +1,4 @@
-package com.revature.Boxed.model.model;
+package com.revature.Boxed.model;
 
 import com.revature.Boxed.annotations.Column;
 import com.revature.Boxed.annotations.Credential;

@@ -1,6 +1,6 @@
 package com.revature.service;
 
-import com.revature.Boxed.utilities.queries.QueryBuilder;
+import com.revature.Boxed.repository.QueryBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
