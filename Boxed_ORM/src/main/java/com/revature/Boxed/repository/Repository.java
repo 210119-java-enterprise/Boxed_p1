@@ -29,23 +29,23 @@ public class Repository {
     public Repository(Configuration config) {
         //login query
         String configCreds = config.getLoginCredEntityName();
-        System.out.println(configCreds);
         String[] creds = configCreds.split(":");
-        System.out.println(creds.toString());
-        queryBuilder.craftNewTransaction()
-                .returnFields()
-                .ofClassType(creds[0])
-                .addCondition_Operator(creds[1], "=", "?", false)
-                .addCondition_Operator(creds[2], "=", "?", false)
-                .saveQuery(0);
+
+        queryBuilder.newTransaction();
+        queryBuilder.returnFields();
+        queryBuilder.ofEntityType(creds[0]);
+        queryBuilder.addCondition_Operator(creds[1], "=", "?", false);
+        queryBuilder.addCondition_Operator(creds[2], "=", "?", false);
+        queryBuilder.saveQuery(0);
+
         this.config = config;
     }
 
     //Build Query ---------------------------------------------------
     public <T> void buildQueryToReturnField(T obj, String fieldName) throws IllegalAccessException {
         //start query statement
-        queryBuilder.craftNewTransaction()
-                .ofClassType(obj.getClass().getAnnotation(Entity.class).tableName());
+        queryBuilder.newTransaction();
+        queryBuilder.ofEntityType(obj.getClass().getAnnotation(Entity.class).tableName());
 
         Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
         List<Field> activeFields = meta.getActiveFields();
@@ -63,9 +63,10 @@ public class Repository {
 
     public <T> void buildQueryToReturnObjectById(T obj, String searchFieldName, String searchFieldValue, boolean isString){
         //start query statement
-        queryBuilder.craftNewTransaction()
-                .ofClassType(obj.getClass().getAnnotation(Entity.class).tableName())
-                .returnFields();
+        queryBuilder.newTransaction();
+        queryBuilder.ofEntityType(obj.getClass().getAnnotation(Entity.class).tableName());
+        queryBuilder.returnFields();
+
         //Add search parameters
         Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
         List<Field> activeFields = meta.getActiveFields();
@@ -79,16 +80,16 @@ public class Repository {
                 break;
             }
         }
-        System.out.println("buildQueryToReturnObjById : " + queryBuilder.getQuery());
+        System.out.println("buildQueryToReturnObjById : " + queryBuilder.getTransaction());
     }
 
     //Build Update --------------------------------------------------
     public <T> void buildUpdateForObjFields(T obj, String updateFieldName, String updatedValue, boolean isString)
             throws IllegalAccessException {
         //start query statement
-        updateBuilder.craftNewTransaction()
-                .updateType(obj.getClass().getAnnotation(Entity.class).tableName())
-                .updateKeyValuePair(updateFieldName, updatedValue, isString);
+        updateBuilder.craftNewTransaction();
+        updateBuilder.ofEntityType(obj.getClass().getAnnotation(Entity.class).tableName());
+        updateBuilder.updateKeyValuePair(updateFieldName, updatedValue, isString);
 
         //Add conditions
         Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
@@ -106,8 +107,8 @@ public class Repository {
     //Build Insert --------------------------------------------------
     public <T> void buildInsertForObj(T obj) throws IllegalAccessException{
         //start insert statement
-        insertBuilder.craftNewTransaction()
-                    .insertType(obj.getClass().getAnnotation(Entity.class).tableName());
+        insertBuilder.newTransaction();
+        insertBuilder.ofEntityType(obj.getClass().getAnnotation(Entity.class).tableName());
 
         Metamodel<Class<?>> meta = config.getMatchingMetamodel(obj.getClass());
         List<Field> activeFields = meta.getActiveFields();
@@ -132,7 +133,7 @@ public class Repository {
         queryBuilder.loadQuery(0);
         PreparedStatement pStmt = null;
         try{
-            pStmt = connection.prepareStatement(queryBuilder.getQuery());
+            pStmt = connection.prepareStatement(queryBuilder.getTransaction());
             pStmt.setString(1, username);
             pStmt.setString(2, password);
 
@@ -146,7 +147,7 @@ public class Repository {
     }
 
     public void executeQuery(Connection connection){
-        String sql = queryBuilder.getQuery();
+        String sql = queryBuilder.getTransaction();
         System.out.println(sql);
         try {
             PreparedStatement pStmt = connection.prepareStatement(sql);
@@ -158,7 +159,7 @@ public class Repository {
     }
 
     public int executeInsert(Connection connection){
-        String insert = insertBuilder.getInsertTransaction();
+        String insert = insertBuilder.getTransaction();
         try {
             PreparedStatement pStmt = connection.prepareStatement(insert);
             return pStmt.executeUpdate();
@@ -170,7 +171,7 @@ public class Repository {
     }
 
     public int executeUpdate(Connection connection){
-        String update = updateBuilder.getUpdateTransaction();
+        String update = updateBuilder.getTransaction();
         try{
             PreparedStatement pStmt = connection.prepareStatement(update);
             return pStmt.executeUpdate();

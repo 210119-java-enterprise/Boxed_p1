@@ -6,8 +6,11 @@ package com.revature.Boxed.repository;
  */
 public class InsertBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
-    public enum StmtType {
-        INSERT, COLUMNS, VALUES;
+    private enum StmtType {
+        INSERT{
+            @Override
+            public String toString(){ return name() + " INTO ";}
+        }, COLUMNS, VALUES;
 
         @Override
         public String toString(){ return name() + " ";}
@@ -22,40 +25,28 @@ public class InsertBuilder extends TransactionBuilder{
         statements = new StringBuilder[StmtType.values().length];
     }
 
-    public InsertBuilder craftNewTransaction(){
-        for (int i = 0; i < statements.length; i++) {
-            statements[i] = new StringBuilder("");
-        }
+    public void newTransaction(){
+        super.newTransaction();
         numEntries = numKVPairs = 0;
         colListed = false;
-        return this;
     }
 
     //INSERT --------------------------------------------------------
     /**
      *
-     * @param ofClassType
-     * @return
+     * @param entityName
      */
-    public InsertBuilder insertType(String ofClassType){
-        //Validate
-        isValidName(ofClassType);
-
-        statements[StmtType.INSERT.ordinal()]
-                .append(StmtType.INSERT.toString())
-                .append("INTO ")
-                .append(ofClassType).append(" ");
-
-        return this;
+    public void ofEntityType(String entityName){
+        super.setType(entityName, StmtType.INSERT.toString());
     }
 
-    public InsertBuilder insertKeyValuePair(String key, String value, boolean isString) {
+    public void insertKeyValuePair(String key, String value, boolean isString) {
         numKVPairs ++;
         colListed = true;
 
        //Does not work with multiple entries
         if (numEntries == 1)
-            return this;
+            return;
 
         //This is the first key value to be entered so format start of list
         if (numKVPairs == 1){
@@ -81,27 +72,16 @@ public class InsertBuilder extends TransactionBuilder{
                 .append(value);
         if (isString)
             statements[StmtType.VALUES.ordinal()].append("'");
-
-        return this;
-    }
-
-    public String getInsertTransaction (){
-        transaction = new StringBuilder("");
-
-        if (isValidTransaction())
-            transaction.append(statements[StmtType.INSERT.ordinal()])
-                    .append(statements[StmtType.COLUMNS.ordinal()]);
-        if(colListed)
-            transaction.append(") ");
-        transaction.append(statements[StmtType.VALUES.ordinal()])
-                .append(") ");
-        System.out.println(transaction.toString());
-        return transaction.toString();
     }
 
     @Override
     public boolean isValidTransaction() {
-        return !statements[InsertBuilder.StmtType.INSERT.ordinal()].toString().equals("")
-                && !statements[InsertBuilder.StmtType.VALUES.ordinal()].toString().equals("");
+        if(colListed)
+            statements[StmtType.COLUMNS.ordinal()].append(") ");
+
+        statements[StmtType.VALUES.ordinal()].append(") ");
+
+        return !statements[StmtType.INSERT.ordinal()].toString().equals("")
+                && !statements[StmtType.VALUES.ordinal()].toString().equals("");
     }
 }

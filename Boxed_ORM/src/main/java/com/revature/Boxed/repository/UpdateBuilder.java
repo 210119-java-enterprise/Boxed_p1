@@ -2,7 +2,7 @@ package com.revature.Boxed.repository;
 
 public class UpdateBuilder extends TransactionBuilder{
     //Attributes ----------------------------------------------------
-    public enum StmtType {
+    private enum StmtType {
         UPDATE, SET, COLUMNS, WHERE;
 
         @Override
@@ -14,22 +14,14 @@ public class UpdateBuilder extends TransactionBuilder{
     public UpdateBuilder() {statements = new StringBuilder[StmtType.values().length];}
 
     public UpdateBuilder craftNewTransaction(){
-        for (int i = 0; i < statements.length; i++) {
-            statements[i] = new StringBuilder("");
-        }
+        super.newTransaction();
         numKVPairs = 0;
         return this;
     }
 
     //Update --------------------------------------------------------
-    public UpdateBuilder updateType(String ofClassType){
-        //Validate
-        isValidName(ofClassType);
-
-        statements[StmtType.UPDATE.ordinal()]
-                .append(StmtType.UPDATE.toString())
-                .append( ofClassType ).append(" ");
-
+    public UpdateBuilder ofEntityType(String entityType){
+        super.setType(entityType, StmtType.UPDATE.toString());
         return this;
     }
 
@@ -65,34 +57,23 @@ public class UpdateBuilder extends TransactionBuilder{
 
         //Wrap string literals
         if (isString)
-            statements[QueryBuilder.StmtType.WHERE.ordinal()]
+            statements[StmtType.WHERE.ordinal()]
                     .append("'");
-        statements[QueryBuilder.StmtType.WHERE.ordinal()]
+        statements[StmtType.WHERE.ordinal()]
                 .append(thatField);
         if (isString)
-            statements[QueryBuilder.StmtType.WHERE.ordinal()]
+            statements[StmtType.WHERE.ordinal()]
                     .append("'");
 
-        statements[QueryBuilder.StmtType.WHERE.ordinal()]
+        statements[StmtType.WHERE.ordinal()]
                 .append(" ");
 
         return this;
     }
 
-    public String getUpdateTransaction(){
-        transaction = new StringBuilder("");
-
-        if (isValidTransaction())
-            transaction.append(statements[StmtType.UPDATE.ordinal()])
-                    .append(statements[StmtType.SET.ordinal()])
-                    .append(" ")
-                    .append(statements[StmtType.WHERE.ordinal()]);
-
-        return transaction.toString();
-    }
-
     @Override
     public boolean isValidTransaction() {
+        statements[StmtType.SET.ordinal()].append(" ");
         return !statements[StmtType.UPDATE.ordinal()].toString().equals("")
                 && !statements[StmtType.SET.ordinal()].toString().equals("")
                 && !statements[StmtType.WHERE.ordinal()].toString().equals("");
