@@ -1,5 +1,8 @@
 # Boxed_p1
-A ORM that allows for a simplified and SQL-free interaction with the relational database
+Boxed is an ORM tool for Java that allows for a simplified and SQL-free interaction with relational databases. 
+The primary feature is its ability to insert, search, and retrieve your java objects to and from a database. It generates
+SQL calls and parses its return sets to spare the developer from needing a strong understanding of either SQL or JDBC. 
+Additionally it provides a basic Connection Pooling service to simplify the creation of user sessions. 
 
 # Install:
 Currently the project is not in the maven repository. To include in your own project it must be downloaded and installed to your local .m2 file where it can then be inlcuded as a dependency to future projects using :
@@ -31,11 +34,12 @@ There is one client facing class:
 
 BlackBox: 
   - Allows you to get a new connection and set currentConnection
-  - Allows you to execute a transaction stored in a string
   - Allows you to get a ResultSet 'Summary' that shows what the raw result set holds
   - Allows you to retrieve or insert entire objects to avoid creating custom transactions. 
+  - Allows you to delete oject from the database
   
-Some classes that might come in handy to explore include the TransactionBuilder classes:
+Some classes that might come in handy to explore include the TransactionBuilder classes which can be leveraged to craft
+more custom SQL calls:
   - Delete Builder
   - Insert Builder
   - QueryBuilder
