@@ -71,8 +71,13 @@ more custom SQL calls:
   - UpdateBuilder
   - WhereBuilder
 
+
+The following image has a usage example for authenticating a user and initiating a new session for that user:
 ![image](https://user-images.githubusercontent.com/58611060/110971149-5cd2d080-830f-11eb-9a1d-3cf9020eecb2.png)
 
+The following image has an example for updating and deleting a persisted object: 
+![image](https://user-images.githubusercontent.com/58611060/110971526-d8cd1880-830f-11eb-9d62-a8ffc3bfb763.png)
 
 
 ## License
+MIT License (https://github.com/210119-java-enterprise/Boxed_p1/blob/main/LICENSE)
