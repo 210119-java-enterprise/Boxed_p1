@@ -24,7 +24,15 @@ Future Releases:
 - Expand automated query building via use of Reflections on users imported classes.
 
 ## Getting Started
-Currently the project is not in the maven repository. To include in your own project it must be downloaded and installed to your local .m2 file where it can then be inlcuded as a dependency to future projects using :
+Currently the project is not in the maven repository. To include in your own project it must be downloaded and installed to your local .m2 file where it can then be inlcuded as a dependency to future projects using.
+
+To clone repository:
+git clone https://github.com/210119-java-enterprise/Boxed_p1.git
+
+To add project to you local m2:
+mvn package
+
+To add to your project: 
         <dependency>
             <groupId>com.revature</groupId>
             <artifactId>Boxed</artifactId>
@@ -32,12 +40,11 @@ Currently the project is not in the maven repository. To include in your own pro
         </dependency>
         
 Included in your project should be a .properties file that resembles the following:
-
-url=jdbc:postgresql://\<HOST\>:\<PORT\>/\<DATABASE_NAME\> <br/>
-admin-usr= \<USERNAME\> <br/>
-admin-pw=\<PASSWORD\> <br/>
-current-schema=\<SCHEMA\> <br/>
-entity-location= \<ABSOLUTE_PATH_TO_DESIRED_CLASS\>,\<ABSOLUTE_PATH_TO_DESIRED_CLASS\>, ...
+        url=jdbc:postgresql://\<HOST\>:\<PORT\>/\<DATABASE_NAME\> <br/>
+        admin-usr= \<USERNAME\> <br/>
+        admin-pw=\<PASSWORD\> <br/>
+        current-schema=\<SCHEMA\> <br/>
+        entity-location= \<ABSOLUTE_PATH_TO_DESIRED_CLASS\>,\<ABSOLUTE_PATH_TO_DESIRED_CLASS\>, ...
   
  The classes that get included in your .properties file as entity containers should be annotated using the following annotations:
 <ul> 
@@ -54,8 +61,7 @@ There is one client facing class:
 BlackBox: 
   - Allows you to get a new connection and set currentConnection
   - Allows you to get a ResultSet 'Summary' that shows what the raw result set holds
-  - Allows you to retrieve or insert entire objects to avoid creating custom transactions. 
-  - Allows you to delete oject from the database
+  - Allows you to execute CRUD operations on objects
   
 Some classes that might come in handy to explore include the TransactionBuilder classes which can be leveraged to craft
 more custom SQL calls:
@@ -64,5 +70,9 @@ more custom SQL calls:
   - QueryBuilder
   - UpdateBuilder
   - WhereBuilder
+
+![image](https://user-images.githubusercontent.com/58611060/110971149-5cd2d080-830f-11eb-9a1d-3cf9020eecb2.png)
+
+
 
 ## License
