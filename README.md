@@ -9,7 +9,7 @@ Additionally it provides a basic Connection Pooling service to simplify the crea
 ## Technologies Used
 Java            - version 8
 JUnit           - version 4.12
-PostgreSQL      - versino 42.2.12
+PostgreSQL      - version 42.2.12
 Mockito         - version 3.3.3
 Jacoco          - version 0.7.7.2
 
